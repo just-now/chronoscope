@@ -95,13 +95,9 @@ q=\left| timeline(sm_i) \right|.
 
 ### Note 2
 ```math
-chart: \mathcal{S} \to \mathcal{K}^{r},
+chart: \mathcal{S} \to (\mathcal{K}^{q})^{r},
 ```
 
 ```math
 chart(sm_i) = \left\{ timeline(sm) | sm \in iter(sm_i) \right\},
-```
-
-```math
-r = \sum_{i=0}^{height(sm_i)}\left| iter_1(sm_i) \right|.
 ```
