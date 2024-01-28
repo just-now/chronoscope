@@ -1,0 +1,3 @@
+*.db
+observatory/__pycache__
+dist/

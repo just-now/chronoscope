@@ -1,0 +1,27 @@
+.p1: &req_parser_positions
+  id: 6
+  pid: 4
+  type: 2
+  time: 1
+  event: 7
+
+.p2: &rel_parser_positions
+  type: 2
+  orig_pid: 4
+  dest_pid: 6
+  orig_id: 8
+  dest_id: 10
+
+tick:
+  - type: gw
+    pos: *req_parser_positions
+  - type: req
+    pos: *req_parser_positions
+  - type: conn
+    pos: *req_parser_positions
+
+relation:
+  - type: conn-to-gw
+    pos: *rel_parser_positions
+  - type: gw-to-req
+    pos: *rel_parser_positions

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -e
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 {mkdb|clean|browse}"
+    exit 1
+fi
+
+cmd_browse() {
+    cd test/
+    ./browse observatory.db
+    cd -
+}
+
+cmd_clean() {
+    rm -rf dist build Observatory.egg-info test/observatory.db test/.env
+}
+
+cmd_mkdb() {
+    cmd_clean
+    python3 setup.py sdist bdist_wheel
+    cd test/
+    python3 -m venv ".env"
+    source ".env/bin/activate"
+    pip3 install ../dist/Observatory-0.0.1-py3-none-any.whl
+    deactivate
+    .env/bin/observatory create --trace trace.txt
+    cd -
+}
+
+case "$1" in
+    mkdb)
+        cmd_mkdb
+	;;
+    clean)
+	cmd_clean
+	;;
+    browse)
+	cmd_browse
+	;;
+    *)
+        echo "Unknown command: $1"
+        exit 1
+	;;
+esac

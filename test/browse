@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# set -x
+[[ -n $1 ]] || { echo "usage: ./browse observatory.db"; exit 1; }
+
+DB="$1"
+RQ=$(echo 'select DISTINCT(id) from tick where type="conn";' | sqlite3 $DB)
+
+for r in $RQ; do
+    ./env observatory -d $DB plot -k $r
+done
