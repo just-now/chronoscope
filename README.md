@@ -1,6 +1,9 @@
 # observatory
 Observatory, a cross-platform matplotlib-based observability tool
 
+## Chart
+![alt text](https://github.com/just-now/observatory/blob/master/img/chart1.png)
+
 ## Definitions
 
 ```math
