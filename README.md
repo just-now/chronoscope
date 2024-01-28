@@ -37,9 +37,9 @@ attr \triangleq \left\langle sm: \mathcal{S}, key: \Sigma^{c}, val: \Sigma^{c} \
 
 ## Notes
 
-### Note 0.0 Aux·il·ia·ry 
+### Note 0.0
 ```math
-iter_1: \mathcal{S} \to \mathcal{S^{p}}, 
+iter_1: \mathcal{S} \to \mathcal{S^{p}},
 ```
 
 ```math
@@ -52,7 +52,7 @@ p = \left| iter_1(sm) \right|.
 
 ### Note 0.1
 ```math
-height: \mathcal{S} \to \mathbb{N}, 
+height: \mathcal{S} \to \mathbb{N},
 ```
 
 ```math
@@ -66,7 +66,7 @@ max(\varnothing) = 0.
 ### Note 0.2
 
 ```math
- iter: \mathcal{S} \to \mathcal{S^{r}}, 
+ iter: \mathcal{S} \to \mathcal{S^{r}},
 ```
 
 ```math
@@ -79,7 +79,7 @@ r = \sum_{i=0}^{height(sm_i)}\left| iter_1(sm_i) \right|.
 
 ### Note 1
 ```math
-timeline: \mathcal{S} \to \mathcal{K}^{q}, 
+timeline: \mathcal{S} \to \mathcal{K}^{q},
 ```
 
 ```math
@@ -92,7 +92,7 @@ q=\left| timeline(sm_i) \right|.
 
 ### Note 2
 ```math
-chart: \mathcal{S} \to \mathcal{K}^{r}, 
+chart: \mathcal{S} \to \mathcal{K}^{r},
 ```
 
 ```math
