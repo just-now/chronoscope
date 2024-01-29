@@ -11,29 +11,13 @@ import observatory.db as db
 import observatory.utils as utils
 import matplotlib.cm as cm
 import matplotlib.pyplot as pt
-from matplotlib.ticker import FuncFormatter
-from typing import Callable
+import matplotlib.ticker as ticker
 from dataclasses import dataclass
 import sys
 
 
-ITER_DEPTH_MAX = 50
 Y_LINE_SPACING = 2
 X_TICKS_MAX = 5
-
-def iterate(origin: int, depth: int, depth_max: int, visit: Callable):
-    if depth_max < depth:
-        return
-
-    # pull timeline
-    if timeline := db.tick.select().where((db.tick.id == origin)):
-        visit([tick for tick in timeline.dicts()])
-
-    # pull children timelines
-    children = db.relation.select().where((db.relation.orig == origin))
-    for child in children.dicts():
-        print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])} ...")
-        iterate(child["dest"], depth + 1, depth_max, visit)
 
 def plot_timeline(timeline, y_pos: int):
     y_pos_scaled = -Y_LINE_SPACING * y_pos
@@ -110,14 +94,14 @@ class chart_annotation:
         self.ann_mode = not self.ann_mode
         event.canvas.draw()
 
-def plot(origin: int, figsize=(16, 4)):
+def plot(origin: int, figsize=(16, 4), depth_max=50):
     fig = pt.figure(figsize=figsize)
     pt.style.use("bmh")
     pt.rcParams["font.size"] = 8
     pt.subplots_adjust(top=0.75)
 
     v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT)
-    iterate(origin, 0, ITER_DEPTH_MAX, v)
+    db.iterate(origin, db.tick, v, 0, depth_max)
 
     end = -Y_LINE_SPACING * v.y_pos
     y_range = [float(x) for x in range(0, end, -Y_LINE_SPACING)]
@@ -127,7 +111,7 @@ def plot(origin: int, figsize=(16, 4)):
     # x_labels = [utils.str_ns(x, compact=True) for x in x_range]
     # pt.xticks(x_range, x_labels)
     # (2) This might be slow, consider to uncomment (1) in such cases.
-    pt.gca().xaxis.set_major_formatter(FuncFormatter(
+    pt.gca().xaxis.set_major_formatter(ticker.FuncFormatter(
         lambda value, pos: utils.str_ns(value, compact=True)))
 
     pt.yticks(y_range, v.y_labels)

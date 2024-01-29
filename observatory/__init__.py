@@ -37,6 +37,7 @@ def parse_args():
     parser.add_argument("command", type=str, choices=["create", "plot"],
                         help="create: build observatory database\n"
                         "plot: plots drill-down chart for the given tick")
+    parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
     parser.add_argument("-k", "--tick_id", type=int,
                         help="tick identifier to plot")
     return parser.parse_args()
@@ -53,6 +54,6 @@ def main() -> int:
 
     if args.command == "plot":
         db.open(args.db, db_options)
-        plot(args.tick_id)
+        plot(args.tick_id, args.fig_size, args.depth)
 
     return 0
