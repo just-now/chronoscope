@@ -37,17 +37,19 @@ class relation(T):
     type = p.TextField()
 
 
-tables = [tick, attr, relation]
+TABLES = [tick, attr, relation]
 
-def open(db_path: str, db_opts: dict[str, int | str] = {}, create=False):
-    if create and os.path.exists(db_path):
-        raise FileExistsError("`{db_path}' exists!")
+def open(path: str, opts: None | dict[str, int | str] = None, create=False):
+    if create and os.path.exists(path):
+        raise FileExistsError("`{path}' exists!")
+    if not create and not os.path.exists(path):
+        raise FileNotFoundError("`{path}' not found!")
 
-    db.init(db_path, db_opts)
+    db.init(path, opts)
     db.connect()
     if create:
         with db:
-            db.create_tables(tables)
+            db.create_tables(TABLES)
 
 def close():
     db.close()
@@ -69,7 +71,7 @@ def load(pr: pr.parser, spans_path: str, fd_chunk_size=100, db_chunk_size=10):
         for fd_chunk in p.chunked(fd, fd_chunk_size):
             records = pr.parse(fd_chunk)
             with db.atomic():
-                for table in tables:
+                for table in TABLES:
                     t_name: str = table._meta.name  # type: ignore
                     for db_chunk in p.chunked(records[t_name], db_chunk_size):
                         table.insert_many(db_chunk).execute()

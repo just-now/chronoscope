@@ -23,7 +23,7 @@ class parser:
         with open(conf_path) as fd:
             conf = yaml.safe_load(fd)
             conf_tables = [t for t in conf.keys() if t[0] != '.']
-            if not all([t in self.tables for t in conf_tables]):
+            if not all(t in self.tables for t in conf_tables):
                 raise SyntaxError(f"a few of {conf_tables} aren't known!")
 
             for table in conf_tables:

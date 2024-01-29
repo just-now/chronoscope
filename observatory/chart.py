@@ -11,12 +11,15 @@ import observatory.db as db
 import observatory.utils as utils
 import matplotlib.cm as cm
 import matplotlib.pyplot as pt
+from matplotlib.ticker import FuncFormatter
 from typing import Callable
+from dataclasses import dataclass
+import sys
 
 
-iter_depth_max = 50
-y_line_spacing = 2
-x_ticks_max = 5
+ITER_DEPTH_MAX = 50
+Y_LINE_SPACING = 2
+X_TICKS_MAX = 5
 
 def iterate(origin: int, depth: int, depth_max: int, visit: Callable):
     if depth_max < depth:
@@ -33,7 +36,7 @@ def iterate(origin: int, depth: int, depth_max: int, visit: Callable):
         iterate(child["dest"], depth + 1, depth_max, visit)
 
 def plot_timeline(timeline, y_pos: int):
-    y_pos_scaled = -y_line_spacing * y_pos
+    y_pos_scaled = -Y_LINE_SPACING * y_pos
     colors = cm.get_cmap("tab10").colors
 
     for current, current_tick in enumerate(timeline[:-1]):
@@ -45,48 +48,96 @@ def plot_timeline(timeline, y_pos: int):
                   colors=colors[current % len(colors)])
         pt.text(start_time, y_pos_scaled, event_label, rotation=90)
 
-    first_tick, last_tick = timeline[0], timeline[-1]
-    start_time, end_time = first_tick["time"], last_tick["time"]
-    last_event_label = last_tick["event"]
-    pt.text(end_time, y_pos_scaled, last_event_label, rotation=90)
+    pt.text(timeline[-1]["time"], y_pos_scaled,
+            timeline[-1]["event"], rotation=90)
 
-    duration = end_time - start_time
-    duration_label = f"{first_tick['type']}: {round(duration / 1e6, 3)}ms"
-    duration_label_x_pos = (end_time + start_time) / 2
-    pt.text(duration_label_x_pos, y_pos_scaled + 0.05, duration_label)
+@dataclass
+class timeline_visitor:
+    y_labels: list
+    y_pos: int
+    x_min: int
+    x_max: int
 
-def plot(origin: int):
-    y_pos = 0
-    y_labels = []
-    x_min = utils.max_int
-    x_max = utils.min_int
+    def __call__(self, timeline: list[dict]):
+        plot_timeline(timeline, self.y_pos)
+        self.y_pos += 1
+        duration = round((timeline[-1]["time"] - timeline[0]["time"]) / 1e6, 3)
+        type, id = timeline[0]["type"], timeline[0]["id"]
+        self.y_labels.append(f"{type}{utils.unpack(id)} [{duration}ms]")
 
-    def visit(timeline: list[dict]):
-        nonlocal y_labels, y_pos, x_min, x_max
-        plot_timeline(timeline, y_pos)
-        type = timeline[0]["type"]
-        id = timeline[0]["id"]
-        y_pos += 1
-        y_labels.append(f"{type}\n{hex(id)}")
-        x_min = min(x_min, min([t["time"] for t in timeline]))
-        x_max = max(x_max, max([t["time"] for t in timeline]))
+        times = [tick["time"] for tick in timeline]
+        self.x_min = min(self.x_min, min(times))
+        self.x_max = max(self.x_max, max(times))
 
+class chart_annotation:
+    def __init__(self, fig):
+        self.cur_mark = ord('A')
+        self.cur = []
+        self.ann = []
+        self.ann_mode = False
+        fig.canvas.mpl_connect("key_press_event", self.on_key)
+        fig.canvas.mpl_connect("button_press_event", self.on_click)
+
+    def on_key(self, event):
+        if event.key == "escape":
+            sys.exit(1)
+        elif event.key == "e":
+            self.ann_mode = not self.ann_mode
+        elif event.key == "d":
+            if self.ann:
+                self.cur_mark -= 1
+                self.cur.pop()
+                self.ann.pop().remove()
+                self.ann.pop().remove()
+            event.canvas.draw()
+
+    def on_click(self, event):
+        if not self.ann_mode:
+            return
+
+        x, ax = event.xdata, event.inaxes
+        # TODO: Don't ask me what's going on with cursors... I don't know!
+        self.cur.append(x)
+        cursor = chr(self.cur_mark)
+        if self.cur_mark % 2 == 0:
+            cursor = chr(self.cur_mark - 1) + cursor + ": "
+            cursor += utils.str_ns_diff(int(abs(self.cur[-1] - self.cur[-2])))
+        self.cur_mark += 1
+
+        self.ann.append(ax.axvline(x=x, color="lightgray"))
+        self.ann.append(ax.annotate(cursor, xycoords=("data", "axes fraction"),
+                                    xy=(x, 0)))
+        self.ann_mode = not self.ann_mode
+        event.canvas.draw()
+
+def plot(origin: int, figsize=(16, 4)):
+    fig = pt.figure(figsize=figsize)
     pt.style.use("bmh")
     pt.rcParams["font.size"] = 8
     pt.subplots_adjust(top=0.75)
 
-    iterate(origin, 0, iter_depth_max, visit)
+    v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT)
+    iterate(origin, 0, ITER_DEPTH_MAX, v)
 
-    end = -y_line_spacing * y_pos
-    y_range = [float(x) for x in range(0, end, -y_line_spacing)]
-    pt.yticks(y_range, y_labels)
+    end = -Y_LINE_SPACING * v.y_pos
+    y_range = [float(x) for x in range(0, end, -Y_LINE_SPACING)]
+    x_range = range(v.x_min, v.x_max, round((v.x_max - v.x_min) / X_TICKS_MAX))
 
-    x_range = range(x_min, x_max, round((x_max - x_min) / x_ticks_max))
-    x_labels = [utils.strns(x, compact=(x != x_range[0])) for x in x_range]
-    pt.xticks(x_range, x_labels)
-    pt.xlabel('Time')
-    pt.autoscale(enable=True, axis='x', tight=True)
+    # (1)
+    # x_labels = [utils.str_ns(x, compact=True) for x in x_range]
+    # pt.xticks(x_range, x_labels)
+    # (2) This might be slow, consider to uncomment (1) in such cases.
+    pt.gca().xaxis.set_major_formatter(FuncFormatter(
+        lambda value, pos: utils.str_ns(value, compact=True)))
+
+    pt.yticks(y_range, v.y_labels)
+    pt.xlabel("Time")
+    pt.autoscale(enable=True, axis="x", tight=True)
+    pt.margins(0.1)
+    _ = chart_annotation(fig)
 
     pt.grid(True)
-    pt.suptitle(f"Request {hex(origin)}")
+    title = f"Request {utils.unpack(origin)}\n"
+    title += f"[{utils.str_ns(x_range[0])}...{utils.str_ns(x_range[-1])}]"
+    pt.suptitle(title)
     pt.show()

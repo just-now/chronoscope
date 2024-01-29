@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # set -x
+set -e
+
 [[ -n $1 ]] || { echo "usage: ./browse observatory.db"; exit 1; }
 
 DB="$1"
