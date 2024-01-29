@@ -42,7 +42,7 @@ attr \triangleq \left\langle sm: \mathcal{S}, key: \Sigma^{c}, val: \Sigma^{c} \
 
 ### Note 0.0
 ```math
-iter_1: \mathcal{S} \to \mathcal{S^{p}},
+iter_1: \mathcal{S} \to \left\{ \mathcal{S^{1}}, ... \mathcal{S^{p}} \right\},
 ```
 
 ```math
@@ -82,7 +82,7 @@ r = \sum_{i=0}^{height(sm_i)}\left| iter_1(sm_i) \right|.
 
 ### Note 1
 ```math
-timeline: \mathcal{S} \to \mathcal{K}^{q},
+timeline: \mathcal{S} \to \left\{ \mathcal{K^{1}}, ... \mathcal{K^{q}} \right\},
 ```
 
 ```math
@@ -95,7 +95,7 @@ q=\left| timeline(sm_i) \right|.
 
 ### Note 2
 ```math
-chart: \mathcal{S} \to (\mathcal{K}^{q})^{r},
+chart: \mathcal{S} \to \left\{   \left\{ \mathcal{K^{1}}, ... \mathcal{K^{q}} \right\}^{1}, ... \left\{ \mathcal{K^{1}}, ... \mathcal{K^{q}} \right\}^{r}    \right\}
 ```
 
 ```math
