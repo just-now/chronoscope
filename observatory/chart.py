@@ -42,7 +42,7 @@ class timeline_visitor:
     x_min: int
     x_max: int
 
-    def __call__(self, timeline: list[dict]):
+    def __call__(self, timeline: list[dict], origin: int, parent: None | int):
         plot_timeline(timeline, self.y_pos)
         self.y_pos += 1
         duration = round((timeline[-1]["time"] - timeline[0]["time"]) / 1e6, 3)
@@ -101,7 +101,7 @@ def plot(origin: int, figsize=(16, 4), depth_max=50):
     pt.subplots_adjust(top=0.75)
 
     v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT)
-    db.iterate(origin, db.tick, v, 0, depth_max)
+    db.iterate(origin, None, db.tick, v, 0, depth_max)
 
     end = -Y_LINE_SPACING * v.y_pos
     y_range = [float(x) for x in range(0, end, -Y_LINE_SPACING)]

@@ -9,7 +9,8 @@
 
 from observatory import db
 from observatory import parser
-from observatory.chart import plot
+import observatory.tree as tree
+import observatory.chart as chart
 import argparse
 import sys
 
@@ -54,6 +55,7 @@ def main() -> int:
 
     if args.command == "plot":
         db.open(args.db, db_options)
-        plot(args.tick_id, args.fig_size, args.depth)
+        chart.plot(args.tick_id, args.fig_size, args.depth)
+        tree.plot(args.tick_id, args.depth)
 
     return 0

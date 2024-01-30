@@ -1,4 +1,4 @@
-.p1: &req_parser_positions
+.p1: &tick_parser_positions
   id: 6
   pid: 4
   type: 2
@@ -12,16 +12,32 @@
   orig_id: 8
   dest_id: 10
 
+.p3: &attr_parser_positions
+  id: 6
+  pid: 4
+  type: 2
+  name: 7
+  value: 1
+
 tick:
   - type: gw
-    pos: *req_parser_positions
+    pos: *tick_parser_positions
   - type: req
-    pos: *req_parser_positions
+    pos: *tick_parser_positions
   - type: conn
-    pos: *req_parser_positions
+    pos: *tick_parser_positions
 
 relation:
   - type: conn-to-gw
     pos: *rel_parser_positions
   - type: gw-to-req
     pos: *rel_parser_positions
+
+attr:
+  - type: gw-attr
+    pos: *attr_parser_positions
+  - type: req-attr
+    pos: *attr_parser_positions
+  - type: conn-attr
+    pos: *attr_parser_positions
+

@@ -1,3 +1,4 @@
 *.db
 observatory/__pycache__
 dist/
+tree_*.png

@@ -22,6 +22,7 @@ def install_requires():
         'peewee',
         'matplotlib',
         'PyYAML',
+        'graphviz',
         'packaging',
     ]
 

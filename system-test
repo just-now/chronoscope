@@ -14,7 +14,7 @@ cmd_browse() {
 }
 
 cmd_clean() {
-    rm -rf dist build Observatory.egg-info test/observatory.db test/.env
+    rm -rf dist build Observatory.egg-info test/observatory.db test/.env test/tree_*.png
 }
 
 cmd_mkdb() {

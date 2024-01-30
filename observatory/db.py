@@ -77,17 +77,17 @@ def load(pr: pr.parser, spans_path: str, fd_chunk_size=100, db_chunk_size=10):
                     for db_chunk in p.chunked(records[t_name], db_chunk_size):
                         table.insert_many(db_chunk).execute()
 
-def iterate(origin: int, samples: type[tick] | type[attr], visit: Callable,
-            depth: int, depth_max: int):
+def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
+            visit: Callable, depth: int, depth_max: int):
     if depth_max < depth:
         return
 
     # pull origin
-    if timeline := tick.select().where((tick.id == origin)):
-        visit(timeline.dicts())
+    if timeline := samples.select().where((samples.id == origin)):
+        visit(timeline.dicts(), origin, parent)
 
     # pull children
     orig_to_children = relation.select().where((relation.orig == origin))
     for child in orig_to_children.dicts():
         print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])} ...")
-        iterate(child["dest"], samples, visit, depth + 1, depth_max)
+        iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)

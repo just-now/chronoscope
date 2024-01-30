@@ -69,7 +69,7 @@ max(\varnothing) = 0.
 ### Note 0.2
 
 ```math
- iter: \mathcal{S} \to \mathcal{S^{r}},
+ iter: \mathcal{S} \to \left\{ \mathcal{S^{1}}, ... \mathcal{S^{r}} \right\},
 ```
 
 ```math
