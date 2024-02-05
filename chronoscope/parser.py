@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Observatory.
+# This file is part of Chronoscope.
 #
 # SPDX-FileCopyrightText: 2024 Anatoliy Bilenko <anatoliy.bilenko@gmail.com>
 #
 # SPDX-License-Identifier: LGPL-3.0-only
 #
 
-import observatory.utils as u
+import chronoscope.utils as u
 from typing import Callable
 import yaml
 

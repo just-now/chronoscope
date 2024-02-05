@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Observatory.
+# This file is part of Chronoscope.
 #
 # SPDX-FileCopyrightText: 2024 Anatoliy Bilenko <anatoliy.bilenko@gmail.com>
 #
 # SPDX-License-Identifier: LGPL-3.0-only
 #
 
-import observatory.db as db
-import observatory.utils as utils
+import chronoscope.db as db
+import chronoscope.utils as utils
 from graphviz import Graph  # type: ignore
 
 # https://graphviz.readthedocs.io/en/stable/examples.html#structs-py

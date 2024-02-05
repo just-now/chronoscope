@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Observatory.
+# This file is part of Chronoscope.
 #
 # SPDX-FileCopyrightText: 2024 Anatoliy Bilenko <anatoliy.bilenko@gmail.com>
 #
 # SPDX-License-Identifier: LGPL-3.0-only
 #
 
-import observatory.db as db
-import observatory.utils as utils
+import chronoscope.db as db
+import chronoscope.utils as utils
 import matplotlib.cm as cm              # type: ignore
 import matplotlib.pyplot as pt          # type: ignore
 import matplotlib.ticker as ticker      # type: ignore

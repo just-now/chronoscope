@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Observatory.
+# This file is part of Chronoscope.
 #
 # SPDX-FileCopyrightText: 2024 Anatoliy Bilenko <anatoliy.bilenko@gmail.com>
 #
 # SPDX-License-Identifier: LGPL-3.0-only
 #
 
-from observatory import db
-from observatory import parser
-import observatory.tree as tree
-import observatory.chart as chart
+from chronoscope import db
+from chronoscope import parser
+import chronoscope.tree as tree
+import chronoscope.chart as chart
 import argparse
 import sys
 
@@ -26,17 +26,17 @@ db_options: dict[str, int | str] = {
 
 def parse_args():
     parser = argparse.ArgumentParser(prog=sys.argv[0], description="""
-    observatory: Plots drill-down chart based on user's traces""")
-    parser.add_argument("-d", "--db", type=str, default="observatory.db",
-                        help="observatory database")
-    parser.add_argument("-c", "--conf", type=str, default="observatory.yaml",
+    chronoscope: Plots drill-down chart based on user's traces""")
+    parser.add_argument("-d", "--db", type=str, default="chronoscope.db",
+                        help="chronoscope database")
+    parser.add_argument("-c", "--conf", type=str, default="chronoscope.yaml",
                         help="configuration, defines how to parse out users'\n"
                         "ticks, attrs and relations from the traces")
     parser.add_argument("-t", "--trace", type=str, help="User's traces")
     parser.add_argument("-D", "--depth", type=int, default=50,
                         help="limits output to given level of ticks")
     parser.add_argument("command", type=str, choices=["create", "plot"],
-                        help="create: build observatory database\n"
+                        help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
     parser.add_argument("-k", "--tick_id", type=int,

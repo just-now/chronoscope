@@ -9,12 +9,12 @@ fi
 
 cmd_browse() {
     cd test/
-    ./browse observatory.db
+    ./browse chronoscope.db
     cd -
 }
 
 cmd_clean() {
-    rm -rf dist build Observatory.egg-info test/observatory.db test/.env test/tree_*.png
+    rm -rf dist build Chronoscope.egg-info test/chronoscope.db test/.env test/tree_*.png
 }
 
 cmd_mkdb() {
@@ -23,9 +23,9 @@ cmd_mkdb() {
     cd test/
     python3 -m venv ".env"
     source ".env/bin/activate"
-    pip3 install ../dist/Observatory-0.0.1-py3-none-any.whl
+    pip3 install ../dist/Chronoscope-0.0.1-py3-none-any.whl
     deactivate
-    .env/bin/observatory create --trace trace.txt
+    .env/bin/chronoscope create --trace trace.txt
     cd -
 }
 

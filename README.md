@@ -1,11 +1,11 @@
-![pytest workflow](https://github.com/just-now/observatory/actions/workflows/python-package.yml/badge.svg)
-![systest workflow](https://github.com/just-now/observatory/actions/workflows/makefile.yml/badge.svg)
+![pytest/systest workflow]https://github.com/just-now/chronoscope/actions/workflows/python-package.yml/badge.svg
+![systest workflow](https://github.com/just-now/chronoscope/actions/workflows/makefile.yml/badge.svg)
 
-# observatory
-Observatory, a cross-platform matplotlib-based observability tool
+# chronoscope
+Chronoscope, a cross-platform matplotlib-based observability tool
 
 ## Chart
-![alt text](https://github.com/just-now/observatory/blob/master/img/chart1.png)
+![alt text](https://github.com/just-now/chronoscope/blob/master/img/chart1.png)
 
 ## Definitions
 

@@ -6,7 +6,7 @@ test: clean
 	diff -u <(printf "629\n62\n629\n") <(echo "select count(*) from tick;" \
 	" select count(*) from relation;" \
 	" select count(*) from attr;" | \
-	sqlite3 test/observatory.db)
+	sqlite3 test/chronoscope.db)
 
 
 .PHONY: clean

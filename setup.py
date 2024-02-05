@@ -6,16 +6,16 @@ from setuptools import setup
 
 
 if sys.version_info < (3, 10):
-    print('Observatory requires at least Python 3.10 to run.')
+    print('Chronoscope requires at least Python 3.10 to run.')
     sys.exit(1)
 
-with open(os.path.join('observatory', '__init__.py'), encoding='utf-8') as f:
+with open(os.path.join('chronoscope', '__init__.py'), encoding='utf-8') as f:
     rexp = r"^__version__ = ['\"]([^'\"]*)['\"]"
     version = re.search(rexp, f.read(), re.M).group(1)  # type: ignore
 
 
 if not version:
-    raise RuntimeError('Cannot find Observatory version information.')
+    raise RuntimeError('Cannot find Chronoscope version information.')
 
 def install_requires():
     requires = [
@@ -30,19 +30,19 @@ def install_requires():
 
 
 setup(
-    name='Observatory',
+    name='Chronoscope',
     version=version,
     description="A cross-platform matplotlib-based observability tool",
     long_description="A cross-platform matplotlib-based observability tool",
     author='Anatoliy Bilenko',
     author_email='anatoliy.bilenko@gmail.com',
-    url='https://github.com/just-now/observatory',
+    url='https://github.com/just-now/chronoscope',
     license='LGPLv3',
     keywords="cli observability",
     python_requires=">=3.10",
     install_requires=install_requires(),
-    packages=['observatory'],
-    entry_points={"console_scripts": ["observatory=observatory:main"]},
+    packages=['chronoscope'],
+    entry_points={"console_scripts": ["chronoscope=chronoscope:main"]},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

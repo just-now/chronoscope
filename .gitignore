@@ -1,5 +1,5 @@
 *.db
-observatory/__pycache__
+chronoscope/__pycache__
 dist/
 tree_*.png
-observatory/tests/__pycache__
+chronoscope/tests/__pycache__
