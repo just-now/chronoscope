@@ -32,10 +32,14 @@ class attr(T):
     name = p.TextField()
     val = p.TextField()
 
-class relation(T):
+class relation(p.Model):
     orig = p.IntegerField()
     dest = p.IntegerField()
     type = p.TextField()
+
+    class Meta:
+        database = db
+        primary_key = p.CompositeKey("orig", "dest")
 
 
 TABLES = [tick, attr, relation]
@@ -57,7 +61,7 @@ def close():
 
 def mkidx():
     db.execute_sql("CREATE INDEX tick_idx on tick(id);")
-    db.execute_sql("CREATE INDEX relation_idx on relation(orig);")
+    db.execute_sql("CREATE INDEX relation_idx on relation(orig,dest);")
     db.execute_sql("CREATE INDEX attr_idx on attr(id);")
 
 def line_nr(file: str) -> int:
