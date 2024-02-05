@@ -1,4 +1,4 @@
-![pytest/systest workflow]https://github.com/just-now/chronoscope/actions/workflows/python-package.yml/badge.svg
+![pytest/systest workflow](https://github.com/just-now/chronoscope/actions/workflows/python-package.yml/badge.svg)
 ![systest workflow](https://github.com/just-now/chronoscope/actions/workflows/makefile.yml/badge.svg)
 
 # chronoscope
