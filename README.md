@@ -1,4 +1,5 @@
-![pytest/systest workflow]https://github.com/just-now/observatory/actions/workflows/python-package.yml/badge.svg
+![pytest workflow](https://github.com/just-now/observatory/actions/workflows/python-package.yml/badge.svg)
+![systest workflow](https://github.com/just-now/observatory/actions/workflows/makefile.yml/badge.svg)
 
 # observatory
 Observatory, a cross-platform matplotlib-based observability tool
