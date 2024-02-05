@@ -21,7 +21,7 @@ X_TICKS_MAX = 5
 
 def plot_timeline(timeline, y_pos: int):
     y_pos_scaled = -Y_LINE_SPACING * y_pos
-    colors = cm.get_cmap("tab10").colors
+    colors = cm.get_cmap("tab10").colors  # type: ignore[attr-defined]
 
     for current, current_tick in enumerate(timeline[:-1]):
         next_tick = timeline[current + 1]
