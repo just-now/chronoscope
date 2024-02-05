@@ -2,3 +2,4 @@
 observatory/__pycache__
 dist/
 tree_*.png
+observatory/tests/__pycache__

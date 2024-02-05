@@ -10,6 +10,7 @@
 from datetime import datetime as t
 import sys
 
+NS_TIME_LEN = len("2055-11-29T20:57:56.489282133")
 FMT_MS = "%Y-%m-%dT%H:%M:%S.%f"
 FMT_MS_COMPACT = ":%S.%f"
 MAX_INT = sys.maxsize
@@ -35,6 +36,8 @@ def unpack(id_pid: int) -> tuple[int, int]:
     return pid, id
 
 def ns(time: str) -> int:
+    if len(time) != NS_TIME_LEN:
+        raise ValueError("Not a nanosecond time format")
     ms = int(t.strptime(time[:-3], FMT_MS).timestamp() * 1e6)
     return ms * 1_000 + int(time[-3:])
 

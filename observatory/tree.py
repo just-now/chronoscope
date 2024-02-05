@@ -9,7 +9,7 @@
 
 import observatory.db as db
 import observatory.utils as utils
-from graphviz import Graph
+from graphviz import Graph  # type: ignore
 
 # https://graphviz.readthedocs.io/en/stable/examples.html#structs-py
 FMT_NODE = """<

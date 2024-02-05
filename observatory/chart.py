@@ -9,9 +9,9 @@
 
 import observatory.db as db
 import observatory.utils as utils
-import matplotlib.cm as cm
-import matplotlib.pyplot as pt
-import matplotlib.ticker as ticker
+import matplotlib.cm as cm              # type: ignore
+import matplotlib.pyplot as pt          # type: ignore
+import matplotlib.ticker as ticker      # type: ignore
 from dataclasses import dataclass
 import sys
 
