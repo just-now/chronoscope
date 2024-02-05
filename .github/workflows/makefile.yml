@@ -14,11 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install apt deps
-      run: sudo apt-get install -y sqlite3 
+      run: sudo apt-get install -y sqlite3
     - name: Run system tests
-      run: ./system-test mkdb && diff -u <(printf "629\n62\n629\n") \
+      run: sudo apt-get install -y sqlite3 && \
+            ./system-test mkdb && diff -u <(printf "629\n62\n629\n") \
             <(echo "select count(*) from tick;" \
             " select count(*) from relation;" \
             " select count(*) from attr;" | \
             sqlite3 test/observatory.db)
-            
