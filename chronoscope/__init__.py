@@ -35,7 +35,8 @@ def parse_args():
     parser.add_argument("-t", "--trace", type=str, help="User's traces")
     parser.add_argument("-D", "--depth", type=int, default=50,
                         help="limits output to given level of ticks")
-    parser.add_argument("command", type=str, choices=["create", "plot"],
+    parser.add_argument("command", type=str,
+                        choices=["create", "chart", "tree"],
                         help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
@@ -47,15 +48,19 @@ def parse_args():
 def main() -> int:
     args = parse_args()
 
-    if args.command == "create":
-        db.open(args.db, db_options, create=True)
-        db.load(parser.parser(args.conf), args.trace)
-        db.mkidx()
-        db.close()
+    match args.command:
+        case "create":
+            db.open(args.db, db_options, create=True)
+            db.load(parser.parser(args.conf), args.trace)
+            db.mkidx()
+            db.close()
 
-    if args.command == "plot":
-        db.open(args.db, db_options)
-        chart.plot(args.tick_id, args.fig_size, args.depth)
-        tree.plot(args.tick_id, args.depth)
+        case "chart":
+            db.open(args.db, db_options)
+            chart.plot(args.tick_id, args.fig_size, args.depth)
+
+        case "tree":
+            db.open(args.db, db_options)
+            tree.plot(args.tick_id, args.depth)
 
     return 0

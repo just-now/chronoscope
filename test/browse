@@ -9,5 +9,6 @@ DB="$1"
 RQ=$(echo 'select DISTINCT(id) from tick where type="conn";' | sqlite3 $DB)
 
 for r in $RQ; do
-    ./env chronoscope -d $DB plot -k $r
+    ./env chronoscope -d $DB tree -k $r
+    ./env chronoscope -d $DB chart -k $r
 done
