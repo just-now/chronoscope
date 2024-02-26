@@ -46,9 +46,9 @@ TABLES = [tick, attr, relation]
 
 def open(path: str, opts: None | dict[str, int | str] = None, create=False):
     if create and os.path.exists(path):
-        raise FileExistsError("`{path}' exists!")
+        raise FileExistsError(f"`{path}' exists!")
     if not create and not os.path.exists(path):
-        raise FileNotFoundError("`{path}' not found!")
+        raise FileNotFoundError(f"`{path}' not found!")
 
     db.init(path, opts)
     db.connect()

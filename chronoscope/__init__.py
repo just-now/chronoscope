@@ -12,6 +12,7 @@ from chronoscope import parser
 import chronoscope.tree as tree
 import chronoscope.chart as chart
 import argparse
+import errno
 import sys
 
 __version__ = '0.0.1'
@@ -46,21 +47,27 @@ def parse_args():
 
 
 def main() -> int:
-    args = parse_args()
-
-    match args.command:
-        case "create":
-            db.open(args.db, db_options, create=True)
-            db.load(parser.parser(args.conf), args.trace)
-            db.mkidx()
-            db.close()
-
-        case "chart":
-            db.open(args.db, db_options)
-            chart.plot(args.tick_id, args.fig_size, args.depth)
-
-        case "tree":
-            db.open(args.db, db_options)
-            tree.plot(args.tick_id, args.depth)
+    try:
+        args = parse_args()
+        match args.command:
+            case "create":
+                db.open(args.db, db_options, create=True)
+                db.load(parser.parser(args.conf), args.trace)
+                db.mkidx()
+                db.close()
+            case "chart":
+                db.open(args.db, db_options)
+                chart.plot(args.tick_id, args.fig_size, args.depth)
+            case "tree":
+                db.open(args.db, db_options)
+                tree.plot(args.tick_id, args.depth)
+    except KeyboardInterrupt:
+        return errno.EINTR
+    except FileExistsError as e:
+        print(e, file=sys.stderr)
+        return errno.EEXIST
+    except FileNotFoundError as e:
+        print(e, file=sys.stderr)
+        return errno.EACCES
 
     return 0

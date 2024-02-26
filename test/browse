@@ -7,8 +7,15 @@ set -e
 
 DB="$1"
 RQ=$(echo 'select DISTINCT(id) from tick where type="conn";' | sqlite3 $DB)
+ENV=${2:-./env}
+
+env() {
+    $ENV "$@"
+}
 
 for r in $RQ; do
-    ./env chronoscope -d $DB tree -k $r
-    ./env chronoscope -d $DB chart -k $r
+    # env ./env chronoscope -d $DB tree -k $r
+    # env ./env chronoscope -d $DB chart -k $r
+    env python3 -m chronoscope -d $DB tree  -k $r
+    env python3 -m chronoscope -d $DB chart -k $r
 done
