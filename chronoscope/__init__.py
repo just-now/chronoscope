@@ -9,9 +9,10 @@
 
 from chronoscope import db
 from chronoscope import parser
+import chronoscope.hist as hist
 import chronoscope.tree as tree
 import chronoscope.chart as chart
-import argparse
+import argparse as arg
 import errno
 import sys
 
@@ -26,8 +27,15 @@ db_options: dict[str, int | str] = {
 }
 
 def parse_args():
-    parser = argparse.ArgumentParser(prog=sys.argv[0], description="""
-    chronoscope: Plots drill-down chart based on user's traces""")
+    parser = arg.ArgumentParser(prog=sys.argv[0],
+                                formatter_class=arg.RawTextHelpFormatter,
+                                description="""
+    chronoscope: Plots drill-down chart based on user's traces
+
+    Examples:
+    chronoscope hist -S \
+    "[{type: conn, span:[started,stopped]}, {type: gw, span:[inited,closed]}]"
+    """)
     parser.add_argument("-d", "--db", type=str, default="chronoscope.db",
                         help="chronoscope database")
     parser.add_argument("-c", "--conf", type=str, default="chronoscope.yaml",
@@ -37,12 +45,14 @@ def parse_args():
     parser.add_argument("-D", "--depth", type=int, default=50,
                         help="limits output to given level of ticks")
     parser.add_argument("command", type=str,
-                        choices=["create", "chart", "tree"],
+                        choices=["create", "chart", "tree", "hist"],
                         help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
     parser.add_argument("-k", "--tick_id", type=int,
                         help="tick identifier to plot")
+    parser.add_argument("-S", "--spans", type=str, default="[]",
+                        help="histogram spans")
     return parser.parse_args()
 
 
@@ -61,6 +71,9 @@ def main() -> int:
             case "tree":
                 db.open(args.db, db_options)
                 tree.plot(args.tick_id, args.depth)
+            case "hist":
+                db.open(args.db, db_options)
+                hist.hist().hist(args.spans)
     except KeyboardInterrupt:
         return errno.EINTR
     except FileExistsError as e:

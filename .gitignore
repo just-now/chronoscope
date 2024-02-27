@@ -3,3 +3,4 @@ chronoscope/__pycache__
 dist/
 tree_*.png
 chronoscope/tests/__pycache__
+*.svg

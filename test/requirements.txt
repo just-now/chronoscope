@@ -2,3 +2,5 @@ matplotlib
 peewee
 PyYAML
 graphviz
+scipy
+

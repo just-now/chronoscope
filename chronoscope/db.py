@@ -95,3 +95,11 @@ def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
     for child in orig_to_children.dicts():
         print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])} ...")
         iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)
+
+def spans(event_begin: str, event_end: str, tick_type: str) -> list:
+    sql = f"""
+    SELECT (tk.time - tick.time) FROM tick JOIN tick tk ON tk.id=tick.id
+    WHERE tick.event="{event_begin}" AND tk.event="{event_end}"
+    AND tick.type="{tick_type}";
+    """
+    return db.execute_sql(sql).fetchall()

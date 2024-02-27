@@ -24,6 +24,7 @@ def install_requires():
         'PyYAML',
         'graphviz',
         'packaging',
+        'scipy',
     ]
 
     return requires
