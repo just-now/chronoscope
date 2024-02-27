@@ -10,6 +10,9 @@ Chronoscope, a cross-platform matplotlib-based observability tool
 ## Histogram
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/hist.svg)
 
+## Queue
+![alt text](https://github.com/just-now/chronoscope/blob/master/img/queue.svg)
+
 ## Definitions
 
 ```math
