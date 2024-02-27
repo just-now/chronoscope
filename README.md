@@ -7,6 +7,9 @@ Chronoscope, a cross-platform matplotlib-based observability tool
 ## Chart
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/chart1.png)
 
+## Histogram
+![alt text](https://github.com/just-now/chronoscope/blob/master/img/hist.svg)
+
 ## Definitions
 
 ```math
