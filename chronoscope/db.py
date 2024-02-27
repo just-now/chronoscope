@@ -103,3 +103,12 @@ def spans(event_begin: str, event_end: str, tick_type: str) -> list:
     AND tick.type="{tick_type}";
     """
     return db.execute_sql(sql).fetchall()
+
+def queues(event_begin: str, event_end: str, tick_type: str) -> list:
+    sql = f"""
+    SELECT (time/1000)*1000 as timer,
+    COUNT(CASE WHEN event = "{event_begin}" THEN 1 END) as cc1,
+    COUNT(CASE WHEN event = "{event_end}" THEN 1 END) as cc2
+    FROM tick WHERE type="{tick_type}" GROUP BY timer;
+    """
+    return db.execute_sql(sql).fetchall()

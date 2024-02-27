@@ -358,7 +358,7 @@ libuv[3433]: 2055-11-29T20:57:59.911673893 conn pid: 111 sm_id: 49 proto_check_o
 libuv[3433]: 2055-11-29T20:57:59.911690304 conn pid: 111 sm_id: 49 msg_read |
 libuv[3433]: 2055-11-29T20:57:59.911711131 conn pid: 111 sm_id: 49 msg_read_ok |
 libuv[3433]: 2055-11-29T20:57:59.911725816 conn pid: 111 sm_id: 49 req_read |
-libuv[3433]: 2055-11-29T20:57:59.911747548 conn pid: 111 sm_id: 49 req_read_ok |
+libuv[3433]: 2055-11-29T20:57:59.911747548 conn pid: 111 sm_id: 49 stopped |
 libuv[3433]: 2055-11-29T20:58:00.888757508 conn pid: 111 sm_id: 51 started |
 libuv[3433]: 2055-11-29T20:58:00.888790201 gw pid: 111 sm_id: 52 inited |
 libuv[3433]: 2055-11-29T20:58:00.888832264 conn pid: 111 sm_id: 51 proto_read |

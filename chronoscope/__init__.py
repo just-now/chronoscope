@@ -12,6 +12,7 @@ from chronoscope import parser
 import chronoscope.hist as hist
 import chronoscope.tree as tree
 import chronoscope.chart as chart
+import chronoscope.queue as queue
 import argparse as arg
 import errno
 import sys
@@ -45,7 +46,7 @@ def parse_args():
     parser.add_argument("-D", "--depth", type=int, default=50,
                         help="limits output to given level of ticks")
     parser.add_argument("command", type=str,
-                        choices=["create", "chart", "tree", "hist"],
+                        choices=["create", "chart", "tree", "hist", "queue"],
                         help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
@@ -74,6 +75,9 @@ def main() -> int:
             case "hist":
                 db.open(args.db, db_options)
                 hist.hist().hist(args.spans)
+            case "queue":
+                db.open(args.db, db_options)
+                queue.queue().queue(args.spans)
     except KeyboardInterrupt:
         return errno.EINTR
     except FileExistsError as e:
