@@ -25,11 +25,10 @@ class queue:
     def q_one(self, ev_begin: str, ev_end: str, tk_type: str):
         queues = [s for s in db.queues(ev_begin, ev_end, tk_type)]
         times = [x[0] for x in queues]
-        times.insert(0, times[0])
-        in_flight = [0]
+        in_flight = []
         in_flight_c = 0
         for x in queues:
-            in_flight_c += (x[1] - x[2])
+            in_flight_c += x[1] - x[2]
             in_flight.append(in_flight_c)
 
         pt.title(f"{tk_type}: {ev_begin} — {ev_end}")
@@ -38,8 +37,7 @@ class queue:
         pt.tight_layout()
         pt.gca().xaxis.set_major_formatter(ticker.FuncFormatter(
             lambda value, pos: utils.str_ns(value, compact=True)))
-        # pt.plot(times, in_flight, 'r--', linewidth=1)
-        pt.step(times, in_flight, 'r--', linewidth=1)
+        pt.plot(times, in_flight, 'r--', linewidth=1)
 
     def queue(self, yspans: str):
         spans: list[dict[str, str]] = safe_load(yspans)

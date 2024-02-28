@@ -22,4 +22,4 @@ dev-test: dev-clean
 .PHONY: dev-clean
 dev-clean:
 	rm -fv chronoscope.db
-	rm -fv tree_111_*.png
+	rm -fv tree_111_*.png *.svg
