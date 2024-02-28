@@ -13,6 +13,7 @@ import chronoscope.hist as hist
 import chronoscope.tree as tree
 import chronoscope.chart as chart
 import chronoscope.queue as queue
+import chronoscope.drawer as drawer
 import argparse as arg
 import errno
 import sys
@@ -74,10 +75,10 @@ def main() -> int:
                 tree.plot(args.tick_id, args.depth)
             case "hist":
                 db.open(args.db, db_options)
-                hist.hist().hist(args.spans)
+                hist.hist().draw(args.spans)
             case "queue":
                 db.open(args.db, db_options)
-                queue.queue().queue(args.spans)
+                queue.queue().draw(args.spans, drawer.orientation.VERTICAL)
     except KeyboardInterrupt:
         return errno.EINTR
     except FileExistsError as e:

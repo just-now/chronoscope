@@ -10,19 +10,15 @@
 import chronoscope.db as db
 import matplotlib.pyplot as pt          # type: ignore
 import matplotlib.ticker as ticker      # type: ignore
-from yaml import safe_load
 import chronoscope.utils as utils
+import chronoscope.drawer as drawer
 
 
-class queue:
+class queue(drawer.drawer):
     def __init__(self, fig="queue.svg", figsize=(12, 4), unit_of_time="ms"):
-        conv = {"ms": 1e6, "us": 1e3}
-        self.fig = fig
-        self.conv = conv[unit_of_time] if unit_of_time in conv else 1
-        self.figsize = figsize
-        self.unit_of_time = unit_of_time
+        super().__init__(fig, figsize, unit_of_time)
 
-    def q_one(self, ev_begin: str, ev_end: str, tk_type: str):
+    def one(self, ev_begin: str, ev_end: str, tk_type: str):
         queues = [s for s in db.queues(ev_begin, ev_end, tk_type)]
         times = [x[0] for x in queues]
         in_flight = []
@@ -38,14 +34,3 @@ class queue:
         pt.gca().xaxis.set_major_formatter(ticker.FuncFormatter(
             lambda value, pos: utils.str_ns(value, compact=True)))
         pt.plot(times, in_flight, 'r--', linewidth=1)
-
-    def queue(self, yspans: str):
-        spans: list[dict[str, str]] = safe_load(yspans)
-        spans_nr = len(spans)
-        pt.figure(figsize=self.figsize)
-        for i, s in enumerate(spans):
-            type = s["type"]
-            span = s["span"]
-            pt.subplot(spans_nr, 1, i + 1)
-            self.q_one(span[0], span[1], type)
-        pt.savefig(fname=self.fig)
