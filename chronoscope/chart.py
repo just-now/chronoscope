@@ -21,7 +21,6 @@ X_TICKS_MAX = 5
 
 def plot_timeline(timeline, y_pos: int):
     y_pos_scaled = -Y_LINE_SPACING * y_pos
-    colors = cm.get_cmap("tab10").colors  # type: ignore[attr-defined]
 
     for current, current_tick in enumerate(timeline[:-1]):
         next_tick = timeline[current + 1]
@@ -29,7 +28,7 @@ def plot_timeline(timeline, y_pos: int):
         event_label = current_tick["event"]
 
         pt.hlines(y_pos_scaled, start_time, end_time, lw=4,
-                  colors=colors[current % len(colors)])
+                  colors=cm.tab10(current))
         pt.text(start_time, y_pos_scaled, event_label, rotation=90)
 
     if len(timeline[:]) == 1:

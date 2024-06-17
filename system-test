@@ -23,7 +23,7 @@ cmd_mkdb() {
     cd test/
     python3 -m venv ".env"
     source ".env/bin/activate"
-    pip3 install ../dist/Chronoscope-0.0.1-py3-none-any.whl
+    pip3 install ../dist/Chronoscope-0.0.2-py3-none-any.whl
     deactivate
     .env/bin/chronoscope create --trace trace.txt
     cd -
