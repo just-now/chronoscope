@@ -32,6 +32,9 @@ def plot_timeline(timeline, y_pos: int):
                   colors=colors[current % len(colors)])
         pt.text(start_time, y_pos_scaled, event_label, rotation=90)
 
+    if len(timeline[:]) == 1:
+        pt.hlines(y_pos_scaled, timeline[0]["time"], timeline[0]["time"])
+
     pt.text(timeline[-1]["time"], y_pos_scaled,
             timeline[-1]["event"], rotation=90)
 
