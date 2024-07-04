@@ -15,7 +15,7 @@ FMT_MS = "%Y-%m-%dT%H:%M:%S.%f"
 FMT_MS_COMPACT = ":%S.%f"
 MAX_INT = sys.maxsize
 MIN_INT = -sys.maxsize - 1
-BITS_PER_PID = 8
+BITS_PER_PID = 16
 DB_INT_SIZE = 64
 
 
