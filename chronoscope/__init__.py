@@ -9,6 +9,7 @@
 
 from chronoscope import db
 from chronoscope import parser
+import chronoscope.vcd as vcd
 import chronoscope.hist as hist
 import chronoscope.tree as tree
 import chronoscope.chart as chart
@@ -47,7 +48,8 @@ def parse_args():
     parser.add_argument("-D", "--depth", type=int, default=50,
                         help="limits output to given level of ticks")
     parser.add_argument("command", type=str,
-                        choices=["create", "chart", "tree", "hist", "queue"],
+                        choices=["create", "chart", "tree",
+                                 "hist", "queue", "vcd"],
                         help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
@@ -79,6 +81,9 @@ def main() -> int:
             case "queue":
                 db.open(args.db, db_options)
                 queue.queue().draw(args.spans, drawer.orientation.VERTICAL)
+            case "vcd":
+                db.open(args.db, db_options)
+                vcd.plot(args.tick_id, args.depth)
     except KeyboardInterrupt:
         return errno.EINTR
     except FileExistsError as e:
