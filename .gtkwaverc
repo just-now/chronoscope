@@ -1,0 +1,10 @@
+hide_sst 1
+splash_disable 1
+do_initial_zoom_fit 1
+initial_window_x 2200
+initial_signal_window_width 140
+initial_window_xpos 200
+initial_window_ypos 400
+
+accel "/File/Quit" Q
+accel "/Time/Zoom/Zoom Best Fit" F

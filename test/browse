@@ -14,8 +14,7 @@ env() {
 }
 
 for r in $RQ; do
-    # env ./env chronoscope -d $DB tree -k $r
-    # env ./env chronoscope -d $DB chart -k $r
+    env python3 -m chronoscope -d $DB vcd   -k $r
     env python3 -m chronoscope -d $DB tree  -k $r
     env python3 -m chronoscope -d $DB chart -k $r
 done

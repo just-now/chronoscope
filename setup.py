@@ -25,6 +25,7 @@ def install_requires():
         'graphviz',
         'packaging',
         'scipy',
+        'pyvcd',
     ]
 
     return requires

@@ -3,4 +3,4 @@ peewee
 PyYAML
 graphviz
 scipy
-
+pyvcd

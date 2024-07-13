@@ -14,7 +14,8 @@ cmd_browse() {
 }
 
 cmd_clean() {
-    rm -rf dist build Chronoscope.egg-info test/chronoscope.db test/.env test/tree_*.png
+    rm -rf dist build Chronoscope.egg-info test/chronoscope.db \
+       test/.env test/tree_*.png test/*.vcd test/*.gtkw
 }
 
 cmd_mkdb() {
