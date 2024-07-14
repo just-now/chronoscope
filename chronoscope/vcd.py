@@ -39,8 +39,8 @@ def plot(origin: int, depth_max=50):
         gtkw.dumpfile(f"{w}.vcd")
 
         with vcd.VCDWriter(fout, timescale="1 ns", date="today") as writer:
-            counters = {}
-            timetable = []
+            counters: dict = {}
+            timetable: list[dict] = []
             v = timeline_visitor(gtkw, writer, counters, timetable)
             db.iterate(origin, None, db.tick, v, 0, depth_max)
 
