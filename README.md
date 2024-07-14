@@ -13,6 +13,9 @@ Chronoscope, a cross-platform matplotlib-based observability tool
 ## Queue
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/queue.svg)
 
+## GTKWave
+![alt text](https://github.com/just-now/chronoscope/blob/master/img/gtkw.png)
+
 ## Definitions
 
 ```math
