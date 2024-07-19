@@ -68,7 +68,7 @@ def line_nr(file: str) -> int:
     result = sp.run(['wc', file], stdout=sp.PIPE, text=True)
     return int(result.stdout.split()[0])
 
-def load(pr: pr.parser, trace_path: str, fd_chunk_size=100, db_chunk_size=10):
+def load(pr: pr.parser, trace_path: str, fd_chunk_size=900, db_chunk_size=100):
     if not os.path.exists(trace_path):
         raise FileNotFoundError("`{trace_path}' not found!")
 

@@ -45,7 +45,6 @@ def plot(origin: int, depth_max=50):
             db.iterate(origin, None, db.tick, v, 0, depth_max)
 
             timetable.sort(key=lambda t: t["time"])
-            time0 = timetable[0]["time"]
+            t0 = timetable[0]["time"]
             for t in timetable:
-                t["time"] -= time0
-                writer.change(counters[t["var"]], t["time"], t["event"])
+                writer.change(counters[t["var"]], t["time"] - t0, t["event"])
