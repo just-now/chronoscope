@@ -10,13 +10,15 @@
 import chronoscope.utils as u
 from typing import Callable
 import yaml
+import sys
 
 class parser:
-    def __init__(self, conf_path: str):
+    def __init__(self, conf_path: str, verbose=False):
         # type -> (dest_table, parser_func)
         self.parsers: dict[str, tuple[str, Callable]] = {}
         # the parser knows about table names
         self.tables = ["tick", "attr", "relation"]
+        self.verbose = verbose
         self.load_config(conf_path)
 
     def load_config(self, conf_path: str):
@@ -48,7 +50,7 @@ class parser:
                 "time": u.ns(line[time]),
                 "type": line[type], "event": line[event],
                 "id": u.pack(int(line[id]), int(line[pid]))
-            } if parse_type == line[type] else None
+            } if type < len(line) and parse_type == line[type] else None
         return parse
 
     def make_rel_parser(self, orig_id: int, dest_id: int,
@@ -58,7 +60,7 @@ class parser:
                 "orig": u.pack(int(line[orig_id]), int(line[orig_pid])),
                 "dest": u.pack(int(line[dest_id]), int(line[orig_pid])),
                 "type": line[type]
-            } if parse_type == line[type] else None
+            } if type < len(line) and parse_type == line[type] else None
         return parse
 
     def make_attr_parser(self, id: int, pid: int,
@@ -68,7 +70,7 @@ class parser:
                 "id": u.pack(int(line[id]), int(line[pid])),
                 "val": line[value],
                 "name": line[name],
-            } if parse_type == line[type] else None
+            } if type < len(line) and parse_type == line[type] else None
         return parse
 
     def register_parser(self, dest_table: str, type: str, parse: Callable):
@@ -79,6 +81,10 @@ class parser:
         records: dict[str, list] = {t: [] for t in self.tables}
         for line in fd_chunk:
             for p_name, (dest_table, parser) in self.parsers.items():
-                if record := parser(line.split(), p_name):
-                    records[dest_table].append(record)
+                try:
+                    if record := parser(line.split(), p_name):
+                        records[dest_table].append(record)
+                except Exception as e:
+                    if self.verbose:
+                        print(f"{e}: {line=}", file=sys.stderr)
         return records

@@ -57,6 +57,8 @@ def parse_args():
                         help="tick identifier to plot")
     parser.add_argument("-S", "--spans", type=str, default="[]",
                         help="histogram spans")
+    parser.add_argument("-v", "--verbose", type=str, default=False,
+                        help="print more information")
     return parser.parse_args()
 
 
@@ -66,7 +68,7 @@ def main() -> int:
         match args.command:
             case "create":
                 db.open(args.db, db_options, create=True)
-                db.load(parser.parser(args.conf), args.trace)
+                db.load(parser.parser(args.conf, args.verbose), args.trace)
                 db.mkidx()
                 db.close()
             case "chart":
