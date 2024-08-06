@@ -57,7 +57,7 @@ def parse_args():
                         help="tick identifier to plot")
     parser.add_argument("-S", "--spans", type=str, default="[]",
                         help="histogram spans")
-    parser.add_argument("-v", "--verbose", type=str, default=False,
+    parser.add_argument("-v", "--verbose", action='store_true',
                         help="print more information")
     return parser.parse_args()
 
@@ -67,24 +67,24 @@ def main() -> int:
         args = parse_args()
         match args.command:
             case "create":
-                db.open(args.db, db_options, create=True)
+                db.open(args.db, db_options, create=True, verbose=args.verbose)
                 db.load(parser.parser(args.conf, args.verbose), args.trace)
                 db.mkidx()
                 db.close()
             case "chart":
-                db.open(args.db, db_options)
+                db.open(args.db, db_options, verbose=args.verbose)
                 chart.plot(args.tick_id, args.fig_size, args.depth)
             case "tree":
-                db.open(args.db, db_options)
+                db.open(args.db, db_options, verbose=args.verbose)
                 tree.plot(args.tick_id, args.depth)
             case "hist":
-                db.open(args.db, db_options)
+                db.open(args.db, db_options, verbose=args.verbose)
                 hist.hist().draw(args.spans)
             case "queue":
-                db.open(args.db, db_options)
+                db.open(args.db, db_options, verbose=args.verbose)
                 queue.queue().draw(args.spans, drawer.orientation.VERTICAL)
             case "vcd":
-                db.open(args.db, db_options)
+                db.open(args.db, db_options, verbose=args.verbose)
                 vcd.plot(args.tick_id, args.depth)
     except KeyboardInterrupt:
         return errno.EINTR
