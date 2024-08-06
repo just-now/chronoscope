@@ -4,3 +4,5 @@ dist/
 tree_*.png
 chronoscope/tests/__pycache__
 *.svg
+*.gtkw
+*.vcd

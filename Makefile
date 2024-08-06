@@ -16,7 +16,7 @@ clean:
 
 .PHONY: dev-test
 dev-test: dev-clean
-	python3 -m chronoscope create -t test/trace.txt -c test/chronoscope.yaml
+	python3 -m chronoscope create -v -t test/trace.txt -c test/chronoscope.yaml
 	./test/browse chronoscope.db ' '
 
 .PHONY: dev-clean

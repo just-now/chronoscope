@@ -43,8 +43,13 @@ class relation(p.Model):
 
 
 TABLES = [tick, attr, relation]
+VERBOSE = False
 
-def open(path: str, opts: None | dict[str, int | str] = None, create=False):
+def open(path: str, opts: None | dict[str, int | str] = None, create=False,
+         verbose=False):
+    global VERBOSE
+    VERBOSE = verbose
+
     if create and os.path.exists(path):
         raise FileExistsError(f"`{path}' exists!")
     if not create and not os.path.exists(path):
@@ -93,7 +98,8 @@ def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
     # pull children
     orig_to_children = relation.select().where((relation.orig == origin))
     for child in orig_to_children.dicts():
-        print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])} ...")
+        if VERBOSE:
+            print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])}")
         iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)
 
 def spans(event_begin: str, event_end: str, tick_type: str) -> list:
