@@ -28,7 +28,7 @@ def plot_timeline(timeline, y_pos: int):
         event_label = current_tick["event"]
 
         pt.hlines(y_pos_scaled, start_time, end_time, lw=4,
-                  colors=cm.tab10(current))  # type: ignore[attr-defined]
+                  colors=cm.tab10(current) % 7)  # type: ignore[attr-defined]
         pt.text(start_time, y_pos_scaled, event_label, rotation=90)
 
     if len(timeline[:]) == 1:

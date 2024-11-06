@@ -58,7 +58,7 @@ class parser:
         def parse(line: list[str], parse_type: str):
             return {
                 "orig": u.pack(int(line[orig_id]), int(line[orig_pid])),
-                "dest": u.pack(int(line[dest_id]), int(line[orig_pid])),
+                "dest": u.pack(int(line[dest_id]), int(line[dest_pid])),
                 "type": line[type]
             } if type < len(line) and parse_type == line[type] else None
         return parse
