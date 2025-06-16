@@ -26,7 +26,7 @@ cmd_mkdb() {
     source ".env/bin/activate"
     pip3 install ../dist/Chronoscope-0.0.4.dev1-py3-none-any.whl
     deactivate
-    .env/bin/chronoscope create --trace trace.txt
+    .env/bin/chronoscope create --trace newtrace.txt -c newchronoscope.yaml
     cd -
 }
 
