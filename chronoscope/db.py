@@ -103,7 +103,7 @@ def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
             print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])}")
         iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)
 
-def iterate_ev_relations(events: list[int]) -> list((int, int)):
+def iterate_ev_relations(events: list[int]) -> list[(int, int)]:
     relations = relation.select().where((relation.orig.in_(events))).dicts()
     return [(rel["orig"], rel["dest"]) for rel in relations]
 
