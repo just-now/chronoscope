@@ -23,6 +23,7 @@ class T(p.Model):
 
 class tick(T):
     id = p.IntegerField()
+    eid = p.IntegerField()
     time = p.IntegerField()
     event = p.TextField()
     type = p.TextField()
@@ -101,6 +102,10 @@ def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
         if VERBOSE:
             print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])}")
         iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)
+
+def iterate_ev_relations(events: list[int]) -> list((int, int)):
+    relations = relation.select().where((relation.orig.in_(events))).dicts()
+    return [(rel["orig"], rel["dest"]) for rel in relations]
 
 def spans(event_begin: str, event_end: str, tick_type: str) -> list:
     sql = f"""

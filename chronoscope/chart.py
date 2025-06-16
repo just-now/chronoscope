@@ -19,7 +19,8 @@ import sys
 Y_LINE_SPACING = 2
 X_TICKS_MAX = 5
 
-def plot_timeline(timeline, y_pos: int):
+def plot_timeline(timeline, y_pos: int) -> list[dict]:
+    ret = []
     y_pos_scaled = -Y_LINE_SPACING * y_pos
 
     for current, current_tick in enumerate(timeline[:-1]):
@@ -29,13 +30,16 @@ def plot_timeline(timeline, y_pos: int):
 
         pt.hlines(y_pos_scaled, start_time, end_time, lw=4,
                   colors=cm.tab10(current % 7))  # type: ignore[attr-defined]
-        pt.text(start_time, y_pos_scaled, event_label, rotation=90)
+        pt.text(start_time, y_pos_scaled, event_label, rotation=45)
+        ret += [{"x": start_time, "y": y_pos_scaled, "eid": current_tick["eid"]}]
 
     if len(timeline[:]) == 1:
         pt.hlines(y_pos_scaled, timeline[0]["time"], timeline[0]["time"])
 
     pt.text(timeline[-1]["time"], y_pos_scaled,
-            timeline[-1]["event"], rotation=90)
+            timeline[-1]["event"], rotation=45)
+    ret += [{"x": timeline[-1]["time"], "y": y_pos_scaled, "eid": timeline[-1]["eid"]}]
+    return ret
 
 @dataclass
 class timeline_visitor:
@@ -43,9 +47,10 @@ class timeline_visitor:
     y_pos: int
     x_min: int
     x_max: int
+    ret: list[dict]
 
     def __call__(self, timeline: list[dict], origin: int, parent: None | int):
-        plot_timeline(timeline, self.y_pos)
+        self.ret += plot_timeline(timeline, self.y_pos)
         self.y_pos += 1
         duration = round((timeline[-1]["time"] - timeline[0]["time"]) / 1e6, 3)
         type, id = timeline[0]["type"], timeline[0]["id"]
@@ -102,8 +107,18 @@ def plot(origin: int, figsize=(16, 4), depth_max=50):
     pt.rcParams["font.size"] = 8
     pt.subplots_adjust(top=0.75)
 
-    v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT)
+    v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT, [])
     db.iterate(origin, None, db.tick, v, 0, depth_max)
+
+    ev_relations = db.iterate_ev_relations([x["eid"] for x in v.ret])
+    ev_eid_to_xy = {}
+    for erel in v.ret:
+        ev_eid_to_xy[erel["eid"]] = (erel["x"], erel["y"])
+
+    for (orig, dest) in ev_relations:
+        (x0, y0) = ev_eid_to_xy[orig]
+        (x1, y1) = ev_eid_to_xy[dest]
+        pt.arrow(x0, y0, x1 - x0, y1 - y0, color='red')
 
     end = -Y_LINE_SPACING * v.y_pos
     y_range = [float(x) for x in range(0, end, -Y_LINE_SPACING)]

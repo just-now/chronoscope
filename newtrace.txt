@@ -1,0 +1,31 @@
+raft[1]: 2025-06-07T11:00:14.026305714 top-to-raft opid: 1 dpid: 1 id: 1111 id: 0 |
+raft[1]: 2025-06-07T11:00:14.026305714 top-to-raft opid: 1 dpid: 1 id: 1111 id: 1 |
+raft[1]: 2025-06-07T11:00:14.026305714 top-to-raft opid: 1 dpid: 1 id: 1111 id: 2 |
+raft[1]: 2025-06-16T09:40:15.107537702 raft pid: 1 sm_id: 0 ev_id: 4096 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107550063 raft pid: 1 sm_id: 0 ev_id: 4097 tick |
+raft[1]: 2025-06-16T09:40:15.107564983 raft pid: 1 sm_id: 1 ev_id: 4098 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107568953 raft pid: 1 sm_id: 1 ev_id: 4099 rv(o=0,d=1,t=1,lt=0,li=0) |
+raft[1]: 2025-06-16T09:40:15.107575958 raft pid: 1 sm_id: 2 ev_id: 4100 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107579520 raft pid: 1 sm_id: 2 ev_id: 4101 rv(o=0,d=2,t=1,lt=0,li=0) |
+raft[1]: 2025-06-16T09:40:15.107585522 raft pid: 1 sm_id: 0 ev_id: 4102 role=Candidate,log= |
+raft[1]: 2025-06-16T09:40:15.107589031 raft pid: 1 sm_id: 0 ev_id: 4103 rvr(o=0,d=0,t=1,vg=true) |
+raft[1]: 2025-06-16T09:40:15.107595382 raft pid: 1 sm_id: 0 ev_id: 4104 rvr(o=1,d=0,t=1,vg=true) |
+raft[1]: 2025-06-16T09:40:15.107602838 raft pid: 1 sm_id: 0 ev_id: 4105 rvr(o=2,d=0,t=1,vg=true) |
+raft[1]: 2025-06-16T09:40:15.107607854 raft pid: 1 sm_id: 1 ev_id: 4106 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107611842 raft pid: 1 sm_id: 2 ev_id: 4107 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107617446 raft pid: 1 sm_id: 0 ev_id: 4108 role=Leader,log= |
+raft[1]: 2025-06-16T09:40:15.107621044 raft pid: 1 sm_id: 0 ev_id: 4109 cli(V1) |
+raft[1]: 2025-06-16T09:40:15.107635601 raft pid: 1 sm_id: 1 ev_id: 4110 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107639935 raft pid: 1 sm_id: 1 ev_id: 4111 ae(o=0,d=1,t=1) |
+raft[1]: 2025-06-16T09:40:15.107648017 raft pid: 1 sm_id: 2 ev_id: 4112 role=Follower,log= |
+raft[1]: 2025-06-16T09:40:15.107651887 raft pid: 1 sm_id: 2 ev_id: 4113 ae(o=0,d=2,t=1) |
+raft[1]: 2025-06-16T09:40:15.107658420 raft pid: 1 sm_id: 0 ev_id: 4114 role=Leader,log=V1| |
+raft[1]: 2025-06-16T09:40:15.107662457 raft pid: 1 sm_id: 0 ev_id: 4115 aer(o=1,d=0,t=1) |
+raft[1]: 2025-06-07T11:00:14.026305714 ev/raft opid: 1 dpid: 1 id: 4113 id: 4116 |
+raft[1]: 2025-06-16T09:40:15.107666821 raft pid: 1 sm_id: 0 ev_id: 4116 aer(o=2,d=0,t=1) |
+raft[1]: 2025-06-07T11:00:14.026305714 ev/raft opid: 1 dpid: 1 id: 4111 id: 4115 |
+raft[1]: 2025-06-16T09:40:15.107671310 raft pid: 1 sm_id: 1 ev_id: 4117 role=Follower,log=V1| |
+raft[1]: 2025-06-16T09:40:15.107675793 raft pid: 1 sm_id: 2 ev_id: 4118 role=Follower,log=V1| |
+raft[1]: 2025-06-16T09:40:15.107680021 raft pid: 1 sm_id: 0 ev_id: 4119 role=Leader,log=V1| |
+raft[1]: 2025-06-16T09:40:15.107683976 raft pid: 1 sm_id: 1 ev_id: 4120 role=Follower,log=V1| |
+raft[1]: 2025-06-16T09:40:15.107688202 raft pid: 1 sm_id: 2 ev_id: 4121 role=Follower,log=V1| |

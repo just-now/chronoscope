@@ -44,11 +44,12 @@ class parser:
         raise NotImplementedError()
 
     def make_req_parser(self, type: int, time: int, event: int,
-                        pid: int, id: int) -> Callable:
+                        pid: int, id: int, eid: int) -> Callable:
         def parse(line: list[str], parse_type: str):
             return {
                 "time": u.ns(line[time]),
                 "type": line[type], "event": line[event],
+                "eid": u.pack(int(line[eid]), int(line[pid])),
                 "id": u.pack(int(line[id]), int(line[pid]))
             } if type < len(line) and parse_type == line[type] else None
         return parse
