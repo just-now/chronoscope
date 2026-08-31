@@ -97,10 +97,10 @@ def iterate(origin: int, parent: None | int, samples: type[tick] | type[attr],
 
     # pull children
     orig_to_children = relation.select().where((relation.orig == origin))
-    for child in orig_to_children.dicts():
+    for child in orig_to_children:
         if VERBOSE:
-            print(f"@[{depth}] {hex(child['orig'])} ... {hex(child['dest'])}")
-        iterate(child["dest"], origin, samples, visit, depth + 1, depth_max)
+            print(f"@[{depth}] {hex(child.orig)} ... {hex(child.dest)}")
+        iterate(child.dest, origin, samples, visit, depth + 1, depth_max)
 
 def spans(event_begin: str, event_end: str, tick_type: str) -> list:
     sql = f"""
