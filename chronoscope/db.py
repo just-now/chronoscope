@@ -31,7 +31,7 @@ class event(p.Model):
     id = p.IntegerField()
     state_machine_id = p.IntegerField()
     time = p.IntegerField()
-    name = p.TextField()
+    name = p.TextField(null=True)
 
     class Meta:
         database = db
@@ -41,10 +41,6 @@ class event(p.Model):
 class event_relation(p.Model):
     from_event_id = p.IntegerField(null=True)
     to_event_id = p.IntegerField()
-    from_sm_id = p.IntegerField(null=True)
-    from_time = p.IntegerField(null=True)
-    to_sm_id = p.IntegerField()
-    to_time = p.IntegerField()
     relation = p.TextField()
 
     class Meta:
@@ -148,7 +144,8 @@ def iterate(origin: int, parent: None | int,
                 .select(event, state_machine.type.alias("sm_type"))
                 .join(state_machine,
                       on=(event.state_machine_id == state_machine.id))
-                .where(event.state_machine_id == origin)
+                .where((event.state_machine_id == origin) &
+                       event.name.is_null(False))
                 .dicts())
     visit(list(timeline), origin, parent)
 

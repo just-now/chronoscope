@@ -77,19 +77,21 @@ class parser:
             raw_peid = line[peid].split("=", 1)[1]
             from_eid = None if raw_peid == "None" else int(raw_peid, 16)
             to_eid = int(line[eid].split("=", 1)[1], 16)
-            sm = int(line[sm_id], 0)
-            ts = u.ns(line[time])
-            return {
+            record = {
                 "event_relation": {
                     "from_event_id": from_eid,
                     "to_event_id": to_eid,
-                    "from_sm_id": sm if from_eid is not None else None,
-                    "from_time": ts if from_eid is not None else None,
-                    "to_sm_id": sm,
-                    "to_time": ts,
                     "relation": parse_type,
                 },
             }
+            if from_eid is None:
+                record["event"] = {
+                    "id": to_eid,
+                    "state_machine_id": int(line[sm_id], 0),
+                    "time": u.ns(line[time]),
+                    "name": None,
+                }
+            return record
         return parse
 
     def make_state_machine_parser(self, type: int, time: int,

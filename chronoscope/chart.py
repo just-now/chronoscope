@@ -67,15 +67,15 @@ class timeline_visitor:
         self.y_pos += 1
 
     def collect_arrows(self):
-        """Query event_relation for (from_sm, from_time) -> (to_sm, to_time).
-
-        The sender's state machine and time come from the send event referenced
-        by each receive relation's from_event_id."""
+        """Resolve both arrow endpoints through their referenced events."""
         sql = """
-        SELECT s.state_machine_id AS from_sm, s.time AS from_time,
-               r.to_sm_id AS to_sm,   r.to_time AS to_time
+        SELECT source.state_machine_id AS from_sm,
+               source.time AS from_time,
+               target.state_machine_id AS to_sm,
+               target.time AS to_time
         FROM event_relation r
-        JOIN event s ON s.id = r.from_event_id
+        JOIN event source ON source.id = r.from_event_id
+        JOIN event target ON target.id = r.to_event_id
         WHERE r.from_event_id IS NOT NULL
         """
         for from_sm, from_time, to_sm, to_time in db.db.execute_sql(sql).fetchall():

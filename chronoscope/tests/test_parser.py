@@ -29,10 +29,17 @@ def test_parser_event_relation_send():
     records = parser(RAFT_YAML).parse([line])
     assert len(records["event_relation"]) == 1
     er = records["event_relation"][0]
-    assert er["from_event_id"] is None
-    assert er["to_event_id"] == 0x1000000000000006
-    assert er["from_sm_id"] is None
-    assert er["from_time"] is None
+    assert er == {
+        "from_event_id": None,
+        "to_event_id": 0x1000000000000006,
+        "relation": "event_relation",
+    }
+    assert records["event"] == [{
+        "id": 0x1000000000000006,
+        "state_machine_id": 0x1000000000000001,
+        "time": 1783359862175353000,
+        "name": None,
+    }]
 
 
 def test_parser_event_relation_recv():
@@ -43,10 +50,12 @@ def test_parser_event_relation_recv():
     records = parser(RAFT_YAML).parse([line])
     assert len(records["event_relation"]) == 1
     er = records["event_relation"][0]
-    assert er["from_event_id"] == 0x1000000000000007
-    assert er["to_event_id"] == 0x100000000000000c
-    assert er["from_sm_id"] is not None
-    assert er["to_sm_id"] is not None
+    assert er == {
+        "from_event_id": 0x1000000000000007,
+        "to_event_id": 0x100000000000000C,
+        "relation": "event_relation",
+    }
+    assert records["event"] == []
 
 
 def test_parser_event_attribute():
