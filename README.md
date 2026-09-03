@@ -8,6 +8,15 @@ Chronoscope, a cross-platform matplotlib-based observability tool
 ## Chart
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/chart1.png)
 
+Large charts can be opened in overlapping event windows:
+
+```console
+chronoscope -d chronoscope.db chart -k ID --window-size 5000
+```
+
+Use `[` and `]` for the previous and next window, and `<` and `>` for the
+first and last window.
+
 ## Histogram
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/hist.svg)
 

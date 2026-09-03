@@ -55,6 +55,8 @@ def parse_args():
                         help="create: build chronoscope database\n"
                         "plot: plots drill-down chart for the given tick")
     parser.add_argument("-f", "--fig_size", nargs=2, type=int, default=[16, 4])
+    parser.add_argument("-w", "--window-size", type=int,
+                        help="show at most N events and page with 50%% overlap")
     parser.add_argument("-k", "--tick_id", type=int,
                         help="tick identifier to plot")
     parser.add_argument("-S", "--spans", type=str, default="[]",
@@ -76,7 +78,7 @@ def main() -> int:
             case "chart":
                 db.open(args.db, db_options, verbose=args.verbose)
                 chart.plot(args.tick_id, args.fig_size, args.depth,
-                           args.reverse)
+                           args.reverse, args.window_size)
             case "tree":
                 db.open(args.db, db_options, verbose=args.verbose)
                 tree.plot(args.tick_id, args.depth)

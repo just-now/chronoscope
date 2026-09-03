@@ -2,12 +2,49 @@
 
 set -euo pipefail
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 DATABASE" >&2
+usage() {
+    echo "Usage: $0 DATABASE [-w|--window-size EVENTS]" >&2
+}
+
+database=
+window_args=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -w|--window-size)
+            if [[ $# -lt 2 || ! $2 =~ ^[1-9][0-9]*$ ]]; then
+                echo "Window size must be a positive integer" >&2
+                usage
+                exit 2
+            fi
+            window_args=(--window-size "$2")
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            usage
+            exit 2
+            ;;
+        *)
+            if [[ -n $database ]]; then
+                echo "Only one database can be specified" >&2
+                usage
+                exit 2
+            fi
+            database=$1
+            shift
+            ;;
+    esac
+done
+
+if [[ -z $database ]]; then
+    usage
     exit 2
 fi
 
-database=$1
 if [[ $database != /* ]]; then
     database="$(pwd)/$database"
 fi
@@ -60,4 +97,5 @@ echo "Created top state machine $top_sm_id with $raft_count Raft children"
 
 cd "$script_dir"
 exec env MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib}" \
-    "$python" -m chronoscope -d "$database" chart -v -k "$top_sm_id"
+    "$python" -m chronoscope -d "$database" chart -v -k "$top_sm_id" \
+    "${window_args[@]}"

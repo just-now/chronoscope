@@ -66,7 +66,7 @@ class timeline_visitor:
         self.x_max = max(self.x_max, max(times))
         self.y_pos += 1
 
-    def collect_arrows(self):
+    def collect_arrows(self, event_range=None):
         """Resolve both arrow endpoints through their referenced events."""
         sql = """
         SELECT source.state_machine_id AS from_sm,
@@ -78,7 +78,18 @@ class timeline_visitor:
         JOIN event target ON target.id = r.to_event_id
         WHERE r.from_event_id IS NOT NULL
         """
-        for from_sm, from_time, to_sm, to_time in db.db.execute_sql(sql).fetchall():
+        params = ()
+        if event_range is not None:
+            first_time, first_id, last_time, last_id = event_range
+            sql += """
+            AND (source.time, source.id) >= (?, ?)
+            AND (source.time, source.id) <= (?, ?)
+            AND (target.time, target.id) >= (?, ?)
+            AND (target.time, target.id) <= (?, ?)
+            """
+            params = (first_time, first_id, last_time, last_id) * 2
+        rows = db.db.execute_sql(sql, params).fetchall()
+        for from_sm, from_time, to_sm, to_time in rows:
             if from_sm in self.sm_to_y and to_sm in self.sm_to_y:
                 self.arrows.append((
                     from_time, -Y_LINE_SPACING * self.sm_to_y[from_sm],
@@ -96,12 +107,15 @@ def plot_arrows(arrows: list):
 
 class chart_annotation:
     def __init__(self, fig):
+        self.reset()
+        fig.canvas.mpl_connect("key_press_event", self.on_key)
+        fig.canvas.mpl_connect("button_press_event", self.on_click)
+
+    def reset(self):
         self.cur_mark = ord('A')
         self.cur = []
         self.ann = []
         self.ann_mode = False
-        fig.canvas.mpl_connect("key_press_event", self.on_key)
-        fig.canvas.mpl_connect("button_press_event", self.on_click)
 
     def on_key(self, event):
         if event.key == "escape":
@@ -135,19 +149,22 @@ class chart_annotation:
         self.ann_mode = not self.ann_mode
         event.canvas.draw()
 
-def plot(origin: int, figsize=(16, 4), depth_max=50, reverse=False):
-    fig = pt.figure(figsize=figsize)
+def _draw(fig, origin: int, figsize, depth_max: int, reverse: bool,
+          event_range=None, page_label=None):
+    fig.clear()
+    pt.figure(fig.number)
     pt.style.use("bmh")
     pt.rcParams["font.size"] = 8
     pt.subplots_adjust(top=0.75)
 
     v = timeline_visitor([], 0, utils.MAX_INT, utils.MIN_INT)
-    db.iterate(origin, None, v, 0, depth_max, reverse)
-    v.collect_arrows()
+    db.iterate(origin, None, v, 0, depth_max, reverse, event_range)
+    v.collect_arrows(event_range)
 
     end = -Y_LINE_SPACING * v.y_pos
     y_range = [float(x) for x in range(0, end, -Y_LINE_SPACING)]
-    x_range = range(v.x_min, v.x_max, round((v.x_max - v.x_min) / X_TICKS_MAX))
+    tick_step = max(1, round((v.x_max - v.x_min) / X_TICKS_MAX))
+    x_range = range(v.x_min, v.x_max + 1, tick_step)
 
     # (1)
     # x_labels = [utils.str_ns(x, compact=True) for x in x_range]
@@ -164,10 +181,76 @@ def plot(origin: int, figsize=(16, 4), depth_max=50, reverse=False):
     # Keep the callback owner alive after non-blocking show() returns in
     # notebook backends such as ipympl. Matplotlib stores weak references to
     # bound-method callbacks.
-    setattr(fig, "_chronoscope_annotation", chart_annotation(fig))
-
     pt.grid(True)
     title = f"Request {utils.format_event_id(origin)}\n"
     title += f"[{utils.str_ns(x_range[0])}...{utils.str_ns(x_range[-1])}]"
+    if page_label is not None:
+        title += f"\nEvents {page_label}"
     pt.suptitle(title)
+
+
+def _page_starts(total: int, size: int) -> list[int]:
+    last = max(0, total - size)
+    step = max(1, size // 2)
+    starts = list(range(0, last + 1, step))
+    if starts[-1] != last:
+        starts.append(last)
+    return starts
+
+
+class chart_pager:
+    def __init__(self, fig, origin: int, figsize, depth_max: int,
+                 reverse: bool, window_size: int):
+        if window_size <= 0:
+            raise ValueError("window size must be greater than zero")
+        self.fig = fig
+        self.origin = origin
+        self.figsize = figsize
+        self.depth_max = depth_max
+        self.reverse = reverse
+        self.window_size = window_size
+        self.sm_ids = db.state_machine_ids(origin, depth_max, reverse)
+        self.total, _ = db.event_page(self.sm_ids, 0, window_size)
+        self.starts = _page_starts(self.total, window_size)
+        self.page = 0
+        self.annotation = chart_annotation(fig)
+        fig.canvas.mpl_connect("key_press_event", self.on_key)
+
+    def draw(self):
+        start = self.starts[self.page]
+        _, rows = db.event_page(self.sm_ids, start, self.window_size)
+        event_range = None
+        if rows:
+            event_range = (*rows[0], *rows[-1])
+        self.annotation.reset()
+        page_label = f"[{start}:{start + len(rows)}) of {self.total}"
+        _draw(self.fig, self.origin, self.figsize, self.depth_max,
+              self.reverse, event_range, page_label)
+        self.fig.canvas.draw_idle()
+
+    def on_key(self, event):
+        old_page = self.page
+        if event.key == "[":
+            self.page = max(0, self.page - 1)
+        elif event.key == "]":
+            self.page = min(len(self.starts) - 1, self.page + 1)
+        elif event.key == "<":
+            self.page = 0
+        elif event.key == ">":
+            self.page = len(self.starts) - 1
+        if self.page != old_page:
+            self.draw()
+
+
+def plot(origin: int, figsize=(16, 4), depth_max=50, reverse=False,
+         window_size=None):
+    fig = pt.figure(figsize=figsize)
+    if window_size is None:
+        _draw(fig, origin, figsize, depth_max, reverse)
+        setattr(fig, "_chronoscope_annotation", chart_annotation(fig))
+    else:
+        pager = chart_pager(fig, origin, figsize, depth_max, reverse,
+                            window_size)
+        pager.draw()
+        setattr(fig, "_chronoscope_pager", pager)
     pt.show()

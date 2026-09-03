@@ -8,7 +8,7 @@
 #
 
 import chronoscope.parser as pr
-from typing import Callable, cast
+from typing import Callable, Iterable, cast
 import subprocess as sp
 import builtins as b
 import peewee as p
@@ -134,18 +134,66 @@ def load(pr: pr.parser, trace_path: str, fd_chunk_size=900, db_chunk_size=100):
                         table.insert_many(db_chunk).on_conflict_ignore().execute()
 
 
+def state_machine_ids(origin: int, depth_max: int,
+                      reverse=False) -> list[int]:
+    result: list[int] = []
+
+    def collect(current: int, depth: int):
+        if depth_max < depth:
+            return
+        result.append(current)
+        relation_column = (state_machine_relation.to_sm_id if reverse
+                           else state_machine_relation.from_sm_id)
+        related_column = (state_machine_relation.from_sm_id if reverse
+                          else state_machine_relation.to_sm_id)
+        relations = state_machine_relation.select().where(
+            relation_column == current)
+        for relation in relations.dicts():
+            relation_data = cast(dict[str, int], relation)
+            collect(relation_data[related_column.name], depth + 1)
+
+    collect(origin, 0)
+    return result
+
+
+def event_page(sm_ids: list[int], start: int,
+               size: int) -> tuple[int, list[tuple[int, int]]]:
+    visible = (event
+               .select(event.time, event.id)
+               .where((event.state_machine_id.in_(sm_ids)) &
+                      event.name.is_null(False)))
+    total = visible.count()
+    rows = (visible
+            .order_by(event.time, event.id)
+            .offset(start)
+            .limit(size)
+            .tuples())
+    return total, list(cast(Iterable[tuple[int, int]], rows))
+
+
 def iterate(origin: int, parent: None | int,
-            visit: Callable, depth: int, depth_max: int, reverse=False):
+            visit: Callable, depth: int, depth_max: int, reverse=False,
+            event_range: None | tuple[int, int, int, int] = None):
     if depth_max < depth:
         return
 
     # pull events of this state machine, enriched with sm_type
+    condition = ((event.state_machine_id == origin) &
+                 event.name.is_null(False))
+    if event_range is not None:
+        first_time, first_id, last_time, last_id = event_range
+        condition &= (
+            ((event.time > first_time) |
+             ((event.time == first_time) & (event.id >= first_id))) &
+            ((event.time < last_time) |
+             ((event.time == last_time) & (event.id <= last_id)))
+        )
     timeline = (event
                 .select(event, state_machine.type.alias("sm_type"))
                 .join(state_machine,
                       on=(event.state_machine_id == state_machine.id))
-                .where((event.state_machine_id == origin) &
-                       event.name.is_null(False))
+                .where(condition)
+                .order_by(event.time, event.id)
                 .dicts())
     visit(list(timeline), origin, parent)
 
@@ -160,7 +208,8 @@ def iterate(origin: int, parent: None | int,
         related = relation_data[related_column.name]
         if VERBOSE:
             print(f"@[{depth}] {hex(origin)} ... {hex(related)}")
-        iterate(related, origin, visit, depth + 1, depth_max, reverse)
+        iterate(related, origin, visit, depth + 1, depth_max, reverse,
+                event_range)
 
 
 def spans(event_begin: str, event_end: str, sm_type: str) -> list:
