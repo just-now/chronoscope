@@ -97,13 +97,35 @@ class timeline_visitor:
                 ))
 
 def plot_arrows(arrows: list):
+    artists = []
     for from_time, from_y, to_time, to_y in arrows:
-        pt.annotate("",
-                    xy=(to_time, to_y), xytext=(from_time, from_y),
-                    arrowprops=dict(arrowstyle="-|>", color="navy",
-                                    lw=0.6, alpha=0.7,
-                                    shrinkA=2, shrinkB=2),
-                    zorder=10)
+        artists.append(pt.annotate(
+            "", xy=(to_time, to_y), xytext=(from_time, from_y),
+            arrowprops=dict(arrowstyle="-|>", color="navy",
+                            lw=0.6, alpha=0.7,
+                            shrinkA=2, shrinkB=2),
+            zorder=10))
+    return artists
+
+
+class event_relation_toggle:
+    def __init__(self, fig):
+        self.visible = True
+        self.artists = []
+        fig.canvas.mpl_connect("key_press_event", self.on_key)
+
+    def replace(self, artists):
+        self.artists = artists
+        for artist in artists:
+            artist.set_visible(self.visible)
+
+    def on_key(self, event):
+        if event.key != "a":
+            return
+        self.visible = not self.visible
+        for artist in self.artists:
+            artist.set_visible(self.visible)
+        event.canvas.draw_idle()
 
 class chart_annotation:
     def __init__(self, fig):
@@ -173,7 +195,7 @@ def _draw(fig, origin: int, figsize, depth_max: int, reverse: bool,
     pt.gca().xaxis.set_major_formatter(ticker.FuncFormatter(
         lambda value, pos: utils.str_ns(value, compact=True)))
 
-    plot_arrows(v.arrows)
+    arrow_artists = plot_arrows(v.arrows)
     pt.yticks(y_range, v.y_labels)
     pt.xlabel("Time")
     pt.autoscale(enable=True, axis="x", tight=True)
@@ -187,6 +209,7 @@ def _draw(fig, origin: int, figsize, depth_max: int, reverse: bool,
     if page_label is not None:
         title += f"\nEvents {page_label}"
     pt.suptitle(title)
+    return arrow_artists
 
 
 def _page_starts(total: int, size: int) -> list[int]:
@@ -214,6 +237,7 @@ class chart_pager:
         self.starts = _page_starts(self.total, window_size)
         self.page = 0
         self.annotation = chart_annotation(fig)
+        self.relation_toggle = event_relation_toggle(fig)
         fig.canvas.mpl_connect("key_press_event", self.on_key)
 
     def draw(self):
@@ -224,8 +248,9 @@ class chart_pager:
             event_range = (*rows[0], *rows[-1])
         self.annotation.reset()
         page_label = f"[{start}:{start + len(rows)}) of {self.total}"
-        _draw(self.fig, self.origin, self.figsize, self.depth_max,
-              self.reverse, event_range, page_label)
+        artists = _draw(self.fig, self.origin, self.figsize, self.depth_max,
+                        self.reverse, event_range, page_label)
+        self.relation_toggle.replace(artists)
         self.fig.canvas.draw_idle()
 
     def on_key(self, event):
@@ -246,8 +271,11 @@ def plot(origin: int, figsize=(16, 4), depth_max=50, reverse=False,
          window_size=None):
     fig = pt.figure(figsize=figsize)
     if window_size is None:
-        _draw(fig, origin, figsize, depth_max, reverse)
+        artists = _draw(fig, origin, figsize, depth_max, reverse)
         setattr(fig, "_chronoscope_annotation", chart_annotation(fig))
+        relation_toggle = event_relation_toggle(fig)
+        relation_toggle.replace(artists)
+        setattr(fig, "_chronoscope_relation_toggle", relation_toggle)
     else:
         pager = chart_pager(fig, origin, figsize, depth_max, reverse,
                             window_size)

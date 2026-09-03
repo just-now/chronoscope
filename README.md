@@ -15,7 +15,7 @@ chronoscope -d chronoscope.db chart -k ID --window-size 5000
 ```
 
 Use `[` and `]` for the previous and next window, and `<` and `>` for the
-first and last window.
+first and last window. Press `a` to hide or show event-relation arrows.
 
 ## Histogram
 ![alt text](https://github.com/just-now/chronoscope/blob/master/img/hist.svg)

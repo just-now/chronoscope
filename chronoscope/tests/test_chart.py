@@ -1,4 +1,6 @@
 import sys
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 
@@ -19,3 +21,19 @@ def test_window_size_argument(monkeypatch):
     monkeypatch.setattr(
         sys, "argv", ["chronoscope", "chart", "--window-size", "5000"])
     assert parse_args().window_size == 5000
+
+
+def test_event_relation_toggle():
+    figure = Mock()
+    artist = Mock()
+    toggle = chart.event_relation_toggle(figure)
+    toggle.replace([artist])
+
+    event = SimpleNamespace(key="a", canvas=figure.canvas)
+    toggle.on_key(event)
+    artist.set_visible.assert_called_with(False)
+    figure.canvas.draw_idle.assert_called_once()
+
+    replacement = Mock()
+    toggle.replace([replacement])
+    replacement.set_visible.assert_called_with(False)
