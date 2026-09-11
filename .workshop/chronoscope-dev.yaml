@@ -1,0 +1,9 @@
+name: chronoscope-dev
+base: ubuntu@24.04
+connections:
+  - plug: omp:omp-home
+    slot: system:mount
+sdks:
+  - name: omp
+actions:
+  omp: omp "$@"

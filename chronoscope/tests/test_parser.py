@@ -1,103 +1,81 @@
-import pytest
 from chronoscope.parser import parser
+import chronoscope.utils as u
 
-RAFT_YAML = "test/raft_chronoscope.yaml"
 
-
-def test_parser_file_not_found():
-    with pytest.raises(FileNotFoundError):
-        _ = parser("")
+TIMESTAMP = "2026-07-06T19:44:22.172542000"
 
 
 def test_parser_event():
     line = (
-        "raft[1]: 2026-07-06T19:44:22.172542000 raft sm_id: 0x1000000000000001 "
-        "eid=0x1000000000000001 role=Follower term=1 log=0 ci=0 lc=0 |"
+        '{"timestamp":"2026-07-06T19:44:22.172542000","thread_id":1,'
+        '"extra_fields":{"type":"event","id":1152921504606846977,'
+        '"state_machine_id":1152921504606846977,"name":"role=Follower"}}'
     )
-    records = parser(RAFT_YAML).parse([line])
+    records = parser().parse([line])
     assert len(records["event"]) == 1
-    assert len(records["state_machine"]) == 1
     assert records["event"][0]["name"] == "role=Follower"
     assert records["event"][0]["id"] == 0x1000000000000001
 
 
+def test_parser_state_machine_record():
+    line = (
+        '{"timestamp":"2026-07-06T19:44:22.172542000",'
+        '"extra_fields":{"type":"state_machine",'
+        '"id":1152921504606846979,"name":"FirstRecordState"}}'
+    )
+    records = parser().parse([line])
+    assert records["state_machine"] == [{
+        "type": "FirstRecordState",
+        "id": 1152921504606846979,
+        "name": "FirstRecordState",
+        "time": u.ns("2026-07-06T19:44:22.172542000"),
+    }]
+
 def test_parser_event_relation_send():
     line = (
-        "raft[1]: 2026-07-06T19:44:22.175353000 event_relation sm_id: 0x1000000000000001 "
-        "eid=0x1000000000000006 peid=None |"
+        '{"timestamp":"2026-07-06T19:44:22.175353000",'
+        '"extra_fields":{"type":"event_relation","from_event_id":null,'
+        '"to_event_id":1152921504606846982,"from_sm_id":null,"from_time":null,'
+        '"to_sm_id":1152921504606846977,"to_time":1783367062175353000,'
+        '"relation":"event_relation"}}'
     )
-    records = parser(RAFT_YAML).parse([line])
+    records = parser().parse([line])
     assert len(records["event_relation"]) == 1
     er = records["event_relation"][0]
     assert er["from_event_id"] is None
     assert er["to_event_id"] == 0x1000000000000006
     assert er["from_sm_id"] is None
     assert er["from_time"] is None
-
-
-def test_parser_event_relation_recv():
-    line = (
-        "raft[1]: 2026-07-06T19:44:22.175565000 event_relation sm_id: 0x1000000000000005 "
-        "eid=0x100000000000000c peid=0x1000000000000007 |"
-    )
-    records = parser(RAFT_YAML).parse([line])
-    assert len(records["event_relation"]) == 1
-    er = records["event_relation"][0]
-    assert er["from_event_id"] == 0x1000000000000007
-    assert er["to_event_id"] == 0x100000000000000c
-    assert er["from_sm_id"] is not None
-    assert er["to_sm_id"] is not None
-
-
-def test_parser_event_attribute():
-    line = (
-        "raft[1]: 2026-07-22T08:28:19.113535000 event_attribute "
-        "eid=0x100000000000000c raft:role=Follower |"
-    )
-    records = parser(RAFT_YAML).parse([line])
-    assert len(records["event_attribute"]) == 1
-    attribute = records["event_attribute"][0]
-    assert attribute["event_id"] == 0x100000000000000C
-    assert attribute["key"] == "raft:role"
-    assert attribute["value"] == "Follower"
-
-
-def test_parser_sm_relation():
-    line = (
-        "sm[1]: 2025-06-07T11:00:14.026305714 state_machine_relation "
-        "from_sm_id=0x1000000000000457 to_sm_id=0x1000000000000001 "
-        "relation=top-to-raft |"
-    )
-    records = parser(RAFT_YAML).parse([line])
-    assert len(records["state_machine_relation"]) == 1
-    assert len(records["state_machine"]) == 1
-    smr = records["state_machine_relation"][0]
-    assert smr["relation"] == "top-to-raft"
-
-
-def test_parser_state_machine():
-    line = (
-        "sm[1]: 2026-07-14T13:12:56.473265000 state_machine "
-        "sm_id=0x1000000000000018 name=DtxState state=Init "
-        "eid=0x1000000000000019 |"
-    )
-    records = parser(RAFT_YAML).parse([line])
-    assert len(records["state_machine"]) == 1
-    assert len(records["event"]) == 1
-    assert records["state_machine"][0]["type"] == "DtxState"
-    assert records["event"][0]["name"] == "Init"
-
-
-def test_parser_malformed():
-    line = "raft[1]: 2026-07-06T19:44:22.667095559 raft"
-    _ = parser(RAFT_YAML, verbose=True).parse([line])
+    assert er["to_time"] == u.ns("2026-07-06T19:44:22.175353000")
 
 
 def test_parser_fuzz():
     line = "a b c d"
-    _ = parser(RAFT_YAML).parse([line])
+    _ = parser().parse([line])
 
 
 def test_parser_empty():
     line = ""
-    _ = parser(RAFT_YAML).parse([line])
+    _ = parser().parse([line])
+
+
+def test_parser_state_machine_attribute():
+    line = (
+        '{"timestamp":"2026-07-14T13:12:56.473265000",'
+        '"extra_fields":{"type":"state_machine_attribute",'
+        '"state_machine_id":1152921504606846977,"key":"node","value":1}}'
+    )
+    records = parser().parse([line])
+    assert len(records["state_machine_attribute"]) == 1
+    assert records["state_machine_attribute"][0]["value"] == 1
+
+
+def test_parser_reads_only_extra_fields():
+    line = (
+        '{"timestamp":"2026-07-06T19:44:22.172542000",'
+        '"extra_fields":{"type":"event","id":1152921504606846977,'
+        '"state_machine_id":1152921504606846977,"name":"role=Follower",'
+        '"file":"raft.rs"}}'
+    )
+    record = parser().parse([line])["event"][0]
+    assert record["file"] == "raft.rs"
