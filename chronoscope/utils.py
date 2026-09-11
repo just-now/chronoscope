@@ -11,8 +11,8 @@ from datetime import datetime as t
 import sys
 
 NS_TIME_LEN = len("2055-11-29T20:57:56.489282133")
-FMT_MS = "%Y-%m-%dT%H:%M:%S.%f"
-FMT_MS_COMPACT = ":%S.%f"
+FMT_US = "%Y-%m-%dT%H:%M:%S.%f"
+FMT_US_COMPACT = ":%S.%f"
 MAX_INT = sys.maxsize
 MIN_INT = -sys.maxsize - 1
 BITS_PER_PID = 16
@@ -52,14 +52,15 @@ def format_event_id(event_id: int) -> str:
 def ns(time: str) -> int:
     if len(time) != NS_TIME_LEN:
         raise ValueError("Not a nanosecond time format")
-    ms = int(t.strptime(time[:-3], FMT_MS).timestamp() * 1e6)
-    return ms * 1_000 + int(time[-3:])
+    us = int(t.strptime(time[:-3], FMT_US).timestamp() * 1e6)
+    return us * 1_000 + int(time[-3:])
 
 def str_ns(unix_time_ns: int, compact=False) -> str:
     dt = t.utcfromtimestamp(unix_time_ns / 1e9)
     if compact:
-        return dt.strftime(FMT_MS_COMPACT)
-    return dt.strftime(FMT_MS)
+        return dt.strftime(FMT_US_COMPACT)
+    return dt.strftime(FMT_US)
+
 
 def str_us_diff(unix_time_ns: int) -> str:
     return str(unix_time_ns // 1_000) + "us"

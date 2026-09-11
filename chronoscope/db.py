@@ -135,7 +135,10 @@ def load(pr: pr.parser, trace_path: str, fd_chunk_size=900, db_chunk_size=100):
                     if t_name not in records:
                         continue
                     for db_chunk in p.chunked(records[t_name], db_chunk_size):
-                        table.insert_many(db_chunk).on_conflict_ignore().execute()
+                        table.insert_many(
+                            db_chunk,
+                            fields=table._meta.sorted_fields,  # type: ignore
+                        ).on_conflict_ignore().execute()
 
 
 def iterate(origin: int, parent: None | int,

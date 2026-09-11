@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/just-now/chronoscope/log-entry-schema.json",
+  "title": "Chronoscope log entry",
+  "description": "Schema for one JSON object in a Chronoscope JSON Lines trace.",
+  "type": "object",
+  "required": ["timestamp", "extra_fields"],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "description": "Timestamp emitted by the trace source.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{9}$"
+    },
+    "thread_id": { "type": "integer" },
+    "extra_fields": {
+      "oneOf": [
+        { "$ref": "#/$defs/state_machine" },
+        { "$ref": "#/$defs/event" },
+        { "$ref": "#/$defs/event_relation" },
+        { "$ref": "#/$defs/state_machine_relation" },
+        { "$ref": "#/$defs/state_machine_attribute" },
+        { "$ref": "#/$defs/event_attribute" }
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "identifier": {
+      "type": "integer",
+      "description": "Globally-unique 64-bit entity identifier."
+    },
+    "state_machine": {
+      "description": "declares the creation of a new state machine",
+      "type": "object",
+      "required": ["type", "id", "name"],
+      "properties": {
+        "type": { "const": "state_machine" },
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "event": {
+      "description": "declares a state-transition on a previously-declared state machine",
+      "type": "object",
+      "required": ["type", "id", "state_machine_id", "name"],
+      "properties": {
+        "type": { "const": "event" },
+        "id": { "$ref": "#/$defs/identifier" },
+        "state_machine_id": { "$ref": "#/$defs/identifier" },
+        "name": {}
+      },
+      "additionalProperties": true
+    },
+    "event_relation": {
+      "description": "declares that a causal relation exists from one event to another",
+      "type": "object",
+      "required": [
+        "type", "from_event_id", "to_event_id", "from_sm_id",
+        "to_sm_id", "relation"
+      ],
+      "properties": {
+        "type": { "const": "event_relation" },
+        "from_event_id": { "$ref": "#/$defs/identifier" },
+        "to_event_id": { "$ref": "#/$defs/identifier" },
+        "from_sm_id": { "$ref": "#/$defs/identifier" },
+        "to_sm_id": { "$ref": "#/$defs/identifier" },
+        "relation": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "state_machine_relation": {
+      "description": "declares a relation between two state machines",
+      "type": "object",
+      "required": ["type", "from_sm_id", "to_sm_id", "relation"],
+      "properties": {
+        "type": { "const": "state_machine_relation" },
+        "from_sm_id": { "$ref": "#/$defs/identifier" },
+        "to_sm_id": { "$ref": "#/$defs/identifier" },
+        "relation": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "state_machine_attribute": {
+      "description": "declares a value associated with a state-machine",
+      "type": "object",
+      "required": ["type", "state_machine_id", "key", "value"],
+      "properties": {
+        "type": { "const": "state_machine_attribute" },
+        "state_machine_id": { "$ref": "#/$defs/identifier" },
+        "key": { "type": "string" },
+        "value": {}
+      },
+      "additionalProperties": true
+    },
+    "event_attribute": {
+      "description": "declares a value associated with an event",
+      "type": "object",
+      "required": ["type", "event_id", "key", "value"],
+      "properties": {
+        "type": { "const": "event_attribute" },
+        "event_id": { "$ref": "#/$defs/identifier" },
+        "key": { "type": "string" },
+        "value": {}
+      },
+      "additionalProperties": true
+    }
+  }
+}

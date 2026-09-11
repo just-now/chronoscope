@@ -6,3 +6,4 @@ chronoscope/tests/__pycache__
 *.svg
 *.gtkw
 *.vcd
+.workshop.lock

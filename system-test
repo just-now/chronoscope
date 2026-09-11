@@ -26,7 +26,7 @@ cmd_mkdb() {
     source ".env/bin/activate"
     pip3 install ../dist/*.whl
     deactivate
-    .env/bin/chronoscope create --trace raft_trace.txt --conf raft_chronoscope.yaml
+    .env/bin/chronoscope create --trace raft_trace.jsonl
     cd -
 }
 

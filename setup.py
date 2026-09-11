@@ -43,6 +43,9 @@ setup(
     keywords="cli observability",
     python_requires=">=3.10",
     install_requires=install_requires(),
+    extras_require={
+        "test": ["jsonschema", "pytest"],
+    },
     packages=['chronoscope'],
     entry_points={"console_scripts": ["chronoscope=chronoscope:main"]},
     classifiers=[
