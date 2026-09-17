@@ -19,7 +19,7 @@ class parser:
         self.parsers: dict[str, tuple[str, Callable]] = {}
         # the parser knows about table names
         self.tables = ["state_machine", "event", "event_relation",
-                       "state_machine_relation", "event_attribute"]
+                       "state_machine_relation", "event_attribute", "state_machine_attribute"]
         self.verbose = verbose
         self.load_config(conf_path)
 
@@ -47,6 +47,8 @@ class parser:
                 return self.make_sm_rel_parser(**kwargs)
             case "event_attribute":
                 return self.make_event_attribute_parser(**kwargs)
+            case "state_machine_attribute":
+                return self.make_sm_attribute_parser(**kwargs)
         raise NotImplementedError()
 
     def make_event_parser(self, type: int, time: int, event: int,
@@ -147,6 +149,22 @@ class parser:
             return {
                 "event_attribute": {
                     "event_id": event_id,
+                    "key": key,
+                    "value": value,
+                },
+            }
+        return parse
+
+    def make_sm_attribute_parser(self, type: int,
+                                    sm_id: int, attribute: int) -> Callable:
+        def parse(line: list[str], parse_type: str):
+            if type >= len(line) or parse_type != line[type]:
+                return None
+            sm_id_val = int(line[sm_id].split("=", 1)[1], 16)
+            key, value = line[attribute].split("=", 1)
+            return {
+                "state_machine_attribute": {
+                    "state_machine_id": sm_id_val,
                     "key": key,
                     "value": value,
                 },
